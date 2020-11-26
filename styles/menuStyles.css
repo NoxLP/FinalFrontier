@@ -1,0 +1,105 @@
+@font-face {
+  font-family: 'titleFont';
+  src: url('../assets/fonts/MachineStd-Bold.otf');
+}
+#menu {
+  position: relative;
+  background-image: url("../assets/images/background/menuBackground.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  overflow: hidden;
+}
+#menu h1 {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -webkit-text-stroke: 2px gray;
+  font: bold 180px 'titleFont';
+  color: rgb(71, 224, 224);
+  text-shadow: 8px 8px rgba(47, 47, 235, 0.863);
+  text-align: center;
+}
+#startButton {
+  position: absolute;
+  height: 80px;
+  width: 200px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(rgba(47, 47, 235, 0.863), rgb(130, 189, 238));
+  border-radius: 40px;
+  font: bold 50px 'pointsFont';
+  color: rgb(18, 228, 228);
+  text-shadow: 5px 5px black;
+  border: none;
+  box-shadow: 2px 2px rgba(47, 47, 235, 0.863);
+  outline: none;
+}
+#startButton:hover {
+  text-shadow: 2px 2px black;
+  border: 1px solid white;
+}
+#soundB {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  height: 20px;
+  width: 20px;
+  color: transparent;
+  background-color: transparent;
+  border: none;
+  outline: none;
+}
+#soundB:hover {
+  filter: brightness(1.5);
+}
+#soundB img {
+  height: 80px;
+  width: 80px;
+  color: white;
+}
+
+.menuGifs {
+  position: absolute;
+  top: 0px;
+  left: -600px;
+  width: 20px;
+  height: 20px;
+  transition: none;
+}
+.menuGifsFinal0 {
+  top: 600px;
+  left: 2000px;
+  height: 480px;
+  width: 500px;
+  transition: top 6s cubic-bezier(0.68, -0.6, 0.32, 1.6), 
+    left 6s cubic-bezier(0.37, 0, 0.63, 1),
+    height 5s linear,
+    width 5s linear;
+}
+.menuGifsFinal1 {
+  top: 1900px;
+  left: 1000px;
+  height: 480px;
+  width: 500px;
+  transition: top 8s linear, 
+    left 8s cubic-bezier(0.33, 1, 0.68, 1),
+    height 3s linear,
+    width 3s linear;
+}
+.menuGifsFinal2 {
+  top: 1000px;
+  left: 1300px;
+  height: 480px;
+  width: 500px;
+  transition: top 7s cubic-bezier(0.36, 0, 0.66, -0.56), 
+    left 7s linear,
+    height 6s linear,
+    width 6s linear;
+}

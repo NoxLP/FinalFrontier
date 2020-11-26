@@ -1,0 +1,80 @@
+@font-face {
+  font-family: 'pointsFont';
+  src: url('../assets/fonts/digital_counter_7.ttf');
+}
+body {
+  padding: 0;
+  margin: 0 auto;
+  background-color: black;
+}
+
+#background {
+  position: relative;
+  /*background: url("../assets/images/background/background0.jpg");
+  background-size: 100% 108%;
+  background-repeat: no-repeat;*/
+  top: 0;
+  left: 0;
+  width: 1900px;
+  height: 970px;
+  margin: auto;
+  display: none;
+}
+#movingBackg {
+  position: absolute;
+  width: 100%;
+  display: inline;
+  bottom: 5200px;
+  z-index: 0;
+}
+#game {
+  position: relative;
+  overflow: hidden;
+}
+#player {
+  position: absolute;
+  filter: brightness(1.2) contrast(125%);
+}
+
+.enemy {
+  position: absolute;
+  transform: rotate(180deg);
+  filter: brightness(1.2) contrast(107%);
+}
+.bullet {
+  position: absolute;
+  filter: brightness(1.5) contrast(110%);
+}
+.explosion {
+  position: absolute;
+}
+.bonusEnemy {
+  position: absolute;
+  display: inline-block;
+  transform: rotate(90deg);
+  filter: brightness(1.5) contrast(110%);
+}
+.pointsPopup {
+  position: absolute;
+  display: inline-block;
+  color: white;
+  text-shadow: -1.5px 1px rgb(92, 193, 218);
+  font-family: "pointsFont";
+  font-size: 30px;
+}
+.pointsPopupAnimation {
+  opacity: 0;
+  font-size: 0;
+  transition: all 1.5s ease-out;
+  transition-property: opacity, font-size;
+}
+.levelClearedPopup {
+  position: absolute;
+  display: inline-block;
+  color: white;
+  text-shadow: 2px 2px rgb(2, 117, 117);
+  font: bold 80px "pointsFont";
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -100%);
+}

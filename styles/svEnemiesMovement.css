@@ -1,0 +1,11 @@
+.enemiesInitial {
+  top: 500;
+  left: -400;
+}
+
+.enemiesFinal {
+  position: absolute;
+  top: 500;
+  left: 2200;
+  transition: left 5s linear;
+}
