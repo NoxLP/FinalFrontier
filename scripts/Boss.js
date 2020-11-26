@@ -64,7 +64,7 @@ export class Boss extends CollisionableObject {
       () => {
         setTimeout(() => {
           this.collisionable = true;
-          game.bossMovements(0);
+          game.enemiesMovementController.bossMovements(0);
         }, 500);
       }
     );

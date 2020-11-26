@@ -1,11 +1,11 @@
-import { Enemy } from "./Enemy.js";
-import { BonusEnemy } from "./BonusEnemy.js";
-import { game, player, menu } from "./main.js";
-import { PointsCounter } from "./PointsCounter.js";
-import { ObjectPool } from "./ObjectPool.js";
-import { Sounds } from "./Sounds.js";
-import { easings } from "./tweens/easings.js";
-import { Boss } from "./Boss.js";
+import { Enemy } from "../Enemy.js";
+import { BonusEnemy } from "../BonusEnemy.js";
+import { game, player, menu } from "../main.js";
+import { PointsCounter } from "../PointsCounter.js";
+import { ObjectPool } from "../ObjectPool.js";
+import { Sounds } from "../Sounds.js";
+import { Boss } from "../Boss.js";
+import { ControllerEnemiesMovement } from "./ControllerEnemiesMovement.js";
 
 /**
  * Class for control them all
@@ -31,81 +31,26 @@ export class Game {
     this.canvas.style.width = `${this.width}px`;
     this.canvas.style.height = `${this.height}px`;
 
-    this.canvasRows = 10;
-    this.canvasColumns = enemiesPerRow + 3;
-    this.canvasRowHeight = this.height / this.canvasRows;
-    this.canvasColumnWidth = this.width / this.canvasColumns;
+    this.enemiesMovementController = new ControllerEnemiesMovement(enemiesPerRow, this.width, this.height);
 
-    this.finalBoss;
-    this.bossPaths = [
-      [
-        [30, 30], [easings.easeOutSine, easings.linear]
-      ],
-      [[1000, 30], [easings.easeOutSine, easings.linear]]
-    ];
-    this.bossAnimationTimerId;
-
-    this.bonus;
-    this.bonusSize = [80, 100];
-    this.bonusTimeout = 10000;
-    this.bonusPointsRange = [50, 450];
-
+    this.siEnemies = [];
+    this.siEnemiesPerRow = enemiesPerRow;
     this.enemiesSize = [
       [50, 50],
       [65, 65],
       [80, 80]
     ];
-    this.siEnemyFrameStep = 4;
-    this.svEnemySpeed = 200;
-    this.enemyBulletStep = 9;
-    this.siEnemies = [];
-    this.siEnemiesPerRow = enemiesPerRow;
-    this.svEnemiesMoveTimerId = null;
-    this.svEnemiesPaths = [
-      [
-        [this.width + 80, 0],
-        [-80, this.height * 0.9],
-        [easings.easeInOutSine, easings.easeInOutBack]
-      ],
-      [[-80, this.height * 0.2], [this.width + 80, this.height * 0.85], [easings.linear, easings.easeInOutBack]],
-      [[this.width + 80, this.height * 0.2], [-80, this.height * 0.7], [easings.linear, easings.easeInOutBack]],
-      [[-80, this.height * 0.7], [this.width + 80, this.height * 0.2], [easings.linear, easings.easeInOutBack]],
+    
+    this.finalBoss;
 
-      [[-80, this.height * 0.7], [this.width + 80, this.height * 0.5], [easings.easeInOutSine, easings.easeInOutBack]],
-      [[-80, this.height * 0.7], [this.width + 80, this.height * 0.5], [easings.easeInCirc, easings.easeInOutBack]],
-
-      [[-80, -80], [this.width, this.height + 80], [easings.easeOutCirc, easings.linear]], //arriba izq => abajo der
-      [[-80, -80], [this.width, this.height + 80], [easings.easeOutCirc, easings.easeOutCirc]], //arriba izq => abajo der
-      [[-80, -80], [this.width, this.height + 80], [easings.linear, easings.easeInCirc]], //arriba izq => abajo der
-
-      [[this.width, -80], [-80, this.height + 80], [easings.linear, easings.easeOutCirc]], //arriba der => abajo izq
-      [[this.width, -80], [-80, this.height + 80], [easings.easeOutBack, easings.easeOutCirc]], //arriba der => abajo izq
-      [[this.width, -80], [-80, this.height + 80], [easings.easeOutCirc, easings.easeOutCirc]], //arriba der => abajo izq
-      [[this.width, -80], [-80, this.height + 80], [easings.easeInCirc, easings.linear]], //arriba der => abajo izq
-
-      [[-80, this.height * 0.25], [this.width * 0.8, this.height + 80], [easings.easeOutBack, easings.easeInOutBack]], //abajo izq1/4 => arriba der1/4
-      [[-80, this.height * 0.25], [this.width * 0.8, this.height + 80], [easings.easeOutBack, easings.easeInCirc]], //abajo izq1/4 => arriba der1/4
-      [[-80, this.height * 0.25], [this.width * 0.8, this.height + 80], [easings.linear, easings.easeInCirc]], //abajo izq1/4 => arriba der1/4
-      [[-80, this.height * 0.25], [this.width * 0.8, this.height + 80], [easings.easeOutBack, easings.linear]], //abajo izq1/4 => arriba der1/4
-      [[-80, this.height * 0.25], [this.width * 0.8, this.height + 80], [easings.linear, easings.easeInOutBack]], //abajo izq1/4 => arriba der1/4
-      [[-80, this.height * 0.25], [this.width * 0.8, this.height + 80], [easings.linear, easings.easeInBack]], //abajo izq1/4 => arriba der1/4
-
-      [[this.width * 0.8, this.height + 80], [-80, -80], [easings.easeInBack, easings.linear]], //abajo der3/4 => arriba izq
-      [[this.width * 0.8, this.height + 80], [-80, -80], [easings.easeInCirc, easings.linear]], //abajo der3/4 => arriba izq
-      [[this.width * 0.8, this.height], [-80, -80], [easings.linear, easings.easeInBack]], //abajo der3/4 => arriba izq      
-      [[this.width * 0.8, this.height + 80], [-80, -80], [easings.linear, easings.easeOutCirc]], //abajo der3/4 => arriba izq      
-
-      [[-80, this.height * 0.75], [this.width * 0.8, -80], [easings.linear, easings.easeInOutCirc]],//abajo izq3/4 => arriba der3/4
-      [[-80, this.height * 0.75], [this.width * 0.8, -80], [easings.easeInCirc, easings.easeInCirc]],
-      [[-80, this.height * 0.75], [this.width * 0.8, -80], [easings.linear, easings.easeInOutBack]],
-      [[-80, this.height * 0.75], [this.width * 0.8, -80], [easings.linear, easings.easeInBack]],
-      [[-80, this.height * 0.75], [this.width * 0.8, -80], [easings.linear, easings.easeInCirc]]
-    ];
+    this.bonus;
+    this.bonusSize = [80, 100];
+    this.bonusPointsRange = [50, 450];
 
     this.playerSize = [80, 80];
     this.playerInitialCoords = [
       (this.width / 2) - (this.playerSize[0] / 2),
-      (this.canvasRowHeight * (this.canvasRows - 1)) + (this.canvasRowHeight / 2) - (this.playerSize[1] / 2)
+      (this.enemiesMovementController.canvasRowHeight * (this.enemiesMovementController.canvasRows - 1)) + (this.enemiesMovementController.canvasRowHeight / 2) - (this.playerSize[1] / 2)
     ];
     this.bulletSize = [60, 50];
 
@@ -191,7 +136,7 @@ export class Game {
     this.points += points;
     this.createExplosion(this.bonus);
     this.bonus.resetPosition();
-    setTimeout(() => { this.bonus.move(); }, this.bonusTimeout);
+    setTimeout(() => { this.bonus.move(); }, this.enemiesMovementController.bonusTimeout);
   }
   /**
    * Returns DOM coordinates for initial enemy position. Used in "space invaders" part to calculate the coordinates of an enemy based on its position in the array siEnemies.
@@ -202,8 +147,8 @@ export class Game {
     //margen + ((total ancho / numero de naves) * numero nave actual)
     const enemyType = Math.ceil(row / 2);
     return [
-      (this.canvasColumnWidth * (column + 0.5)) - (this.enemiesSize[enemyType][0] / 2),
-      (this.canvasRowHeight * (row + 1.5)) - (this.enemiesSize[enemyType][1] / 2)
+      (this.enemiesMovementController.canvasColumnWidth * (column + 0.5)) - (this.enemiesSize[enemyType][0] / 2),
+      (this.enemiesMovementController.canvasRowHeight * (row + 1.5)) - (this.enemiesSize[enemyType][1] / 2)
     ];
   }
   /**
@@ -271,7 +216,7 @@ export class Game {
     Despues de 30 seg vuelve a ser visible en la posición de salida.
     */
     this.bonus = new BonusEnemy();
-    setTimeout(() => { this.bonus.move(); }, (Math.random() * game.bonusTimeout * 0.5) + (game.bonusTimeout * 0.5));
+    setTimeout(() => { this.bonus.move(); }, (Math.random() * game.enemiesMovementController.bonusTimeout * 0.5) + (game.enemiesMovementController.bonusTimeout * 0.5));
   }
   /**
    * TODO: Create the final boss
@@ -284,205 +229,7 @@ export class Game {
   /************************************************************************************************************/
   /********************************************* ENEMIES MOVEMENT *********************************************/
   //#region 
-  /**
-   * Get left-most x coordinate of column
-   * @param {number} column Column index
-   */
-  getXOfCanvasColumn(column) { return this.canvasColumnWidth * (column + 0.5); }
-  /**
-   * Get top-most y coordinate of row
-   * @param {number} row Row index
-   */
-  getYOfCanvasRow(row) { return this.canvasRowHeight * (row + 0.5); }
-  /**
-   * Used in "space invaders" part to check if the enemies from the most left column are at the left limit of the screen, so enemies should move down.
-   */
-  leftColumnEnemyIsInCanvasLeftColumn() {
-    var mostLeftColumnWithEnemyAlive;
-    for (let j = 0; j < this.siEnemiesPerRow; j++) {
-      for (let i = 0; i < this.siEnemies.length; i++) {
-        mostLeftColumnWithEnemyAlive = this.siEnemies[i][j];
-        if (mostLeftColumnWithEnemyAlive.elem.style.display !== "none") {
-          break;
-        }
-      }
-      if (mostLeftColumnWithEnemyAlive.elem.style.display !== "none") {
-        break;
-      }
-    }
-
-    if (!mostLeftColumnWithEnemyAlive)
-      return false;
-
-    return mostLeftColumnWithEnemyAlive.x > 0 && mostLeftColumnWithEnemyAlive.x < this.canvasColumnWidth;
-  }
-  /**
-   * Used in "space invaders" part to check if the enemies from the most right column are at the right limit of the screen, so enemies should move down.
-   */
-  rightColumnEnemyIsInCanvasRightColumn() {
-    let mostLeftColumnWithEnemyAlive;
-    for (let j = this.siEnemiesPerRow - 1; j >= 0; j--) {
-      for (let i = 0; i < this.siEnemies.length; i++) {
-        mostLeftColumnWithEnemyAlive = this.siEnemies[i][j];
-        if (mostLeftColumnWithEnemyAlive.elem.style.display !== "none") {
-          break;
-        }
-      }
-      if (mostLeftColumnWithEnemyAlive.elem.style.display !== "none") {
-        break;
-      }
-    }
-
-    if (!mostLeftColumnWithEnemyAlive)
-      return false;
-
-    return mostLeftColumnWithEnemyAlive.x > this.canvasColumnWidth * (this.canvasColumns - 1) &&
-      mostLeftColumnWithEnemyAlive.x < this.canvasColumnWidth * this.canvasColumns;
-  }
-  /**
-   * Move all enemies in the "space invaders" pattern
-   */
-  moveSpaceInvadersEnemies() {
-    /*
-    Van de izquierda a derecha
-    mientras que la esquina derecha del enemigo de la derecha no colisione con el límite de la derecha
-      sumas a x
-    bajan
-      sumas una fila a y 
-    van de derecha a izquierda
-      mientras que la esquina izquierda del enemigo de la izquierda no colisione con el límite de la izquierda
-    restas a x
-      bajan
-    sumas una fila a y 
-    REPITE hasta que un enemigo de la fila inferior colisione con player
-    */
-
-    this.spaceInvadersEnemiesShootsTimerId = setInterval(() => {
-      /*
-      Elegimos una columna aleatoria
-      El último enemigo de esa columna 
-      Dispara
-
-      0 1 2 3
-      ceil(rand*4) => [1, 4] -1 => [0, 3]
-       */
-      let shootColumn = Math.ceil(Math.random() * this.siEnemiesPerRow) - 1;
-      let lastEnemy;
-      for (let i = 0; i < this.siEnemies.length; i++) {
-        if (this.siEnemies[i][shootColumn] && this.siEnemies[i][shootColumn].elem.style.display !== "none") {
-          lastEnemy = this.siEnemies[i][shootColumn];
-        } else {
-          continue;
-        }
-      }
-
-      if (lastEnemy)
-        lastEnemy.shoot();
-    }, 1500);
-
-    for (let i = 0; i < this.siEnemies.length; i++) {
-      for (let j = 0; j < this.siEnemies[i].length; j++) {
-        let enemy = this.siEnemies[i][j];
-        enemy.collisionable = true;
-        enemy.elem.style.display = "inline";
-        enemy.moveEnemyLeftToRight();
-      }
-    }
-  }
-  /**
-   * Move bonus enemy
-   */
-  moveBonusEnemy() { setTimeout(() => { this.bonus.move(); }, (Math.random() * game.bonusTimeout * 0.5) + (game.bonusTimeout * 0.5)); }
-  /**
-   * Cancel movement of all enemies
-   */
-  cancelAllEnemiesMovement() {
-    if (this.bonus) {
-      this.bonus.cancelAnimation();
-      this.bonus.resetPosition();
-    }
-
-    if (this.finalBoss && this.finalBoss.elem.style.display !== "none") {
-      this.finalBoss.myMovementTween.stop();
-      clearTimeout(this.bossAnimationTimerId);
-      this.bossAnimationTimerId = null;
-    }
-
-    if (this.gameState === "spaceInvaders") {
-      for (let i = 0; i < this.siEnemies.length; i++) {
-        for (let j = 0; j < this.siEnemies[i].length; j++) {
-          cancelAnimationFrame(this.siEnemies[i][j].moveAnimationId);
-          clearTimeout(this.siEnemies[i][j].moveAnimationId);
-        }
-      }
-      clearInterval(this.spaceInvadersEnemiesShootsTimerId);
-    } else {
-      clearTimeout(this.svEnemiesMoveTimerId);
-      this.svEnemiesMoveTimerId = null;
-      this.svEnemiesPool.showingObjects.forEach(x => {
-        clearTimeout(x.moveAnimationId);
-        if (x.myMovementTween)
-          x.myMovementTween.stop();
-      });
-    }
-  }
-  /**
-   * Function to handle "scroll vertical" part's enemies movement. Call it once and works recursively with setInterval. Cancel it with function cancelAllEnemiesMovements.
-   * @param {number} lastIndex Index of last path used. Used to recursive calls, no need to set it at first call
-   */
-  scrollVerticalEnemiesMovements(lastIndex) {
-    let index;
-    while ((index = Math.round(Math.random() * (this.svEnemiesPaths.length - 1))) === lastIndex);
-
-    let initial = this.svEnemiesPaths[index][0];
-    let final = this.svEnemiesPaths[index][1];
-    let shiptype = Math.round(Math.random() * 2);
-    let numberOfEnemies = Math.round((Math.random() * 3) + 2);
-
-    for (let i = 0; i < numberOfEnemies; i++) {
-      let enemy = this.svEnemiesPool.getNewObject(() => new Enemy(shiptype, initial[0], initial[1]), initial[0], initial[1]);
-      enemy.type = shiptype;
-      enemy.elem.classList.add("enemy");
-
-      enemy.moveAnimationId = setTimeout(() => {
-        enemy.moveToPoint(
-          [final[0], final[1]],
-          1,
-          this.svEnemiesPaths[index][2][0],
-          this.svEnemiesPaths[index][2][1])
-      },
-        1000 + (500 * i)
-      );
-    }
-
-    if (!this.svEnemiesMoveTimerId) {
-      this.svEnemiesMoveTimerId = setInterval(() => { this.scrollVerticalEnemiesMovements(index); }, (Math.random() * 6000) + 2000);
-    }
-  }
-  /**
-   * Function to handle final boss movement. Call it once and works recursively with setTimeouts. Cancel it with function cancelAllEnemiesMovements.
-   * @param {number} index Index of last movement pattern used. Start with 0 the first tiem it's called
-   */
-  bossMovements(index) {
-    /*
-    Sigue un patrón de movimientos => Hacer paths en this.bossPaths(array) hasta el final, y repetir
-      Bucle:
-      Hacer un path
-      Esperar 3 segundos
-    */
-
-    if (index === this.bossPaths.length)
-      index = 0;
-
-    this.finalBoss.moveToPoint(
-      this.bossPaths[index][0],
-      this.bossPaths[index][1][0],
-      this.bossPaths[index][1][1]
-    )
-    index++;
-
-    this.bossAnimationTimerId = setTimeout(() => { this.bossMovements(index); }, 3000);
-  }
+  
   //#endregion
   /************************************************************************************************************/
   /************************************************* HELPERS **************************************************/
@@ -528,7 +275,7 @@ export class Game {
     player.responsive = false;
     this.createExplosion(player);
     this.removePlayer();
-    this.cancelAllEnemiesMovement();
+    this.enemiesMovementController.cancelAllEnemiesMovement();
 
     if (this.bonus) {
       this.bonus.cancelAnimation();
@@ -545,13 +292,13 @@ export class Game {
         player.responsive = true;
 
         if (this.finalBoss && this.finalBoss.elem.display !== "none") {
-          this.bossMovements(0);
+          this.enemiesMovementController.bossMovements(0);
         } else if (this.gameState === "spaceInvaders") {
           this.siReset();
-          this.moveSpaceInvadersEnemies();
-          this.moveBonusEnemy();
+          this.enemiesMovementController.moveSpaceInvadersEnemies();
+          this.enemiesMovementController.moveBonusEnemy();
         } else {
-          this.scrollVerticalEnemiesMovements();
+          this.enemiesMovementController.scrollVerticalEnemiesMovements();
         }
 
         player.responsive = true;
@@ -576,7 +323,7 @@ export class Game {
    * Game over. You know, message, reset all, go back to the menu, etc.
    */
   gameOver() {
-    this.cancelAllEnemiesMovement();
+    this.enemiesMovementController.cancelAllEnemiesMovement();
     this.audio.changeMusicByGameState();
     this.showMessage("Game Over");
     this.audio.playAudio("assets/music/sounds/gameOver.mp3");
@@ -654,7 +401,7 @@ export class Game {
     setTimeout(() => {
       player.responsive = true;
       this.moveBackgroundDown();
-      this.scrollVerticalEnemiesMovements();
+      this.enemiesMovementController.scrollVerticalEnemiesMovements();
     }, 3000);
   }
   /**
@@ -667,7 +414,7 @@ export class Game {
     resetear vidas y puntos.
     volver al menú.
     */
-    this.cancelAllEnemiesMovement();
+    this.enemiesMovementController.cancelAllEnemiesMovement();
     this.stopAllPlayerMovements();
     player.responsive = false;
 
@@ -708,9 +455,9 @@ export class Game {
     this.audio.changeMusicByGameState();
 
     if (!this.siEnemies || this.siEnemies.length === 0)
-      game.createEnemies();
-    game.moveSpaceInvadersEnemies();
-    game.createBonusEnemy();
+      this.createEnemies();
+    this.enemiesMovementController.moveSpaceInvadersEnemies();
+    this.createBonusEnemy();
   }
   /************************************************************************************************************/
   /************************************************* CHEATS ***************************************************/
@@ -718,7 +465,7 @@ export class Game {
    * Cheat to go instantly to the final boss.
    */
   cheatToFinal() {
-    this.cancelAllEnemiesMovement();
+    this.enemiesMovementController.cancelAllEnemiesMovement();
     cancelAnimationFrame(this.backgroundMoveTimerId);
     this.finalBoss = new Boss();
     this.finalBoss.enterGame();

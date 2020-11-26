@@ -56,8 +56,8 @@ export class EnemyBullet extends CollisionableObject {
       this.x > 0 && //limite izq
       this.x + this.width) //limite der
     {
-      this.y += (direction[1] * game.enemyBulletStep);
-      this.x += (direction[0] * game.enemyBulletStep);
+      this.y += (direction[1] * game.enemiesMovementController.enemyBulletStep);
+      this.x += (direction[0] * game.enemiesMovementController.enemyBulletStep);
 
       var collidingPlayer = this.collideWith(player);
 

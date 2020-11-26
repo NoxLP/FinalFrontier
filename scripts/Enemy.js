@@ -49,11 +49,11 @@ export class Enemy extends CollisionableObject {
   /**
    * Getter for canvas column in which the enemy are currently positioned. Used in "space invaders" part.
    */
-  get canvasColumn() { return Math.round(this.x / game.canvasColumnWidth); }
+  get canvasColumn() { return Math.round(this.x / game.enemiesMovementController.canvasColumnWidth); }
   /**
    * Getter for canvas row in which the enemy are currently positioned. Used in "space invaders" part.
    */
-  get canvasRow() { return Math.round(this.y / game.canvasRowHeight); }
+  get canvasRow() { return Math.round(this.y / game.enemiesMovementController.canvasRowHeight); }
 
   /**
    * Part of "space invaders" movement. Move horizontally to the right until target X coordinate is reached.
@@ -61,7 +61,7 @@ export class Enemy extends CollisionableObject {
    */
   moveRightToTarget(target) {
     if (this.centerX < target) {
-      this.x += game.siEnemyFrameStep;
+      this.x += game.enemiesMovementController.siEnemyFrameStep;
       if (this.collideWith(player)) {
         game.enemyCollidesWithPlayer(this);
         return;
@@ -78,7 +78,7 @@ export class Enemy extends CollisionableObject {
    */
   moveLeftToTarget(target) {
     if (this.centerX > target) {
-      this.x -= game.siEnemyFrameStep;
+      this.x -= game.enemiesMovementController.siEnemyFrameStep;
       if (this.collideWith(player)) {
         game.enemyCollidesWithPlayer(this);
         return;
@@ -95,7 +95,7 @@ export class Enemy extends CollisionableObject {
    */
   moveDownToTarget(target) {
     if (this.centerY < target) {
-      this.y += game.siEnemyFrameStep;
+      this.y += game.enemiesMovementController.siEnemyFrameStep;
       if (this.collideWith(player)) {
         game.enemyCollidesWithPlayer(this);
         return;
@@ -114,8 +114,8 @@ export class Enemy extends CollisionableObject {
    * Move enemy to the right. Part of the classical movement pattern
    */
   moveEnemyLeftToRight() {
-    if (!game.rightColumnEnemyIsInCanvasRightColumn()) {
-      const nextCanvasColumnX = game.getXOfCanvasColumn(this.canvasColumn + 1);
+    if (!game.enemiesMovementController.rightColumnEnemyIsInCanvasRightColumn()) {
+      const nextCanvasColumnX = game.enemiesMovementController.getXOfCanvasColumn(this.canvasColumn + 1);
       this.moveRightToTarget(nextCanvasColumnX);
     } else {
       this.lastMove = "right";
@@ -126,8 +126,8 @@ export class Enemy extends CollisionableObject {
    * Move enemy to the left. Part of the classical movement pattern
    */
   moveEnemyRightToLeft() {
-    if (!game.leftColumnEnemyIsInCanvasLeftColumn()) {
-      const nextCanvasColumnX = game.getXOfCanvasColumn(this.canvasColumn - 1);
+    if (!game.enemiesMovementController.leftColumnEnemyIsInCanvasLeftColumn()) {
+      const nextCanvasColumnX = game.enemiesMovementController.getXOfCanvasColumn(this.canvasColumn - 1);
       this.moveLeftToTarget(nextCanvasColumnX);
     } else {
       this.lastMove = "left";
@@ -138,7 +138,7 @@ export class Enemy extends CollisionableObject {
    * Move enemy down. Part of the classical movement pattern
    */
   moveEnemyDown() {
-    const nextCanvasRowY = game.getYOfCanvasRow(this.canvasRow + 1);
+    const nextCanvasRowY = game.enemiesMovementController.getYOfCanvasRow(this.canvasRow + 1);
     this.moveDownToTarget(nextCanvasRowY);
   }
   /**

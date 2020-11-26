@@ -34,7 +34,7 @@ export class BonusEnemy extends CollisionableObject {
    */
   move() {
     if(this.x < game.width){
-      this.x += game.siEnemyFrameStep;
+      this.x += game.enemiesMovementController.siEnemyFrameStep;
       this.animationFrameId = window.requestAnimationFrame(() => {this.move();});
     } else {
       this.resetPosition();
@@ -46,7 +46,7 @@ export class BonusEnemy extends CollisionableObject {
           this.collisionable = true;
           this.move();
         });
-      }, game.bonusTimeout);
+      }, game.enemiesMovementController.bonusTimeout);
     }
   }
 }

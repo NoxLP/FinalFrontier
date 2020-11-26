@@ -88,7 +88,7 @@ export class Tween {
   start() {
     this._xDistance = this._finalPoint[0] - this._enemy.x;
     this._yDistance = this._finalPoint[1] - this._enemy.y;
-    this._percentagePerStep = 1 / (game.svEnemySpeed * this._speedFactor);
+    this._percentagePerStep = 1 / (game.enemiesMovementController.svEnemySpeed * this._speedFactor);
 
     if (this._numberOfShoots) {
       /* F.i.:
