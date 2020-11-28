@@ -3,9 +3,10 @@ import { player, menu } from "../main.js";
 import { PointsCounter } from "../PointsCounter.js";
 import { Sounds } from "../Sounds.js";
 import { Boss } from "../model/Boss.js";
+import { Model } from "../model/Model.js";
 import { ControllerEnemiesMovement } from "./ControllerEnemiesMovement.js";
 import { ControllerBackground } from "./ControllerBackground.js";
-import { Model } from "../model/Model.js";
+import { ControllerPlayerInput } from "./ControllerPlayerInput.js";
 
 /**
  * Class for control them all
@@ -31,6 +32,7 @@ export class Game {
 
     this.enemiesMovementController = new ControllerEnemiesMovement(enemiesPerRow, this.width, this.height, this.canvasRows);
     this.backgroundController = new ControllerBackground();
+    this.playerInputController = new ControllerPlayerInput();
     this.model = new Model(enemiesPerRow, this.width, this.canvasRows, this.enemiesMovementController.canvasRowHeight);
 
     this._points = 0;

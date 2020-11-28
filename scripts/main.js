@@ -15,68 +15,17 @@ export const menu = new Menu();
  */
 export const player = new Player();
 
+let lastPressedKey = "";
 document.addEventListener("keydown", function (e) {
-  if (!player.responsive)
+  if(e.key !== " " && e.key === lastPressedKey)
     return;
-
-  /*
-  Keys direction correspondence
-  key Left => -1,  0
-  right =>     1,  0
-  up =>        0, -1
-  down =>      0,  1
-  */
-
-  switch (e.key) {
-    case "ArrowLeft":
-      player.playerDirection[0] = -1;
-      break;
-    case "ArrowRight":
-      player.playerDirection[0] = 1;
-      break;
-    case "ArrowUp":
-      if (game.gameState !== "spaceInvaders")
-        player.playerDirection[1] = -1;
-      break;
-    case "ArrowDown":
-      if (game.gameState !== "spaceInvaders")
-        player.playerDirection[1] = 1;
-      break;
-    case "t":
-      game.cheatToFinal();
-      break;
-  }
-  if (!player.movementAnimationId)
-    player.move();
-
-  if (e.key === " " && !player.shooting) {
-    player.shooting = true;
-    player.shoot();
-  }
+  
+  lastPressedKey = e.key;
+  game.playerInputController.keyDown(e.key);
 });
 
 document.addEventListener("keyup", e => {
-  if (!player.responsive)
-    return;
-
-  switch (e.key) {
-    case "ArrowLeft":
-      player.playerDirection[0] = 0;
-      break;
-    case "ArrowRight":
-      player.playerDirection[0] = 0;
-      break;
-    case "ArrowUp":
-      player.playerDirection[1] = 0;
-      break;
-    case "ArrowDown":
-      player.playerDirection[1] = 0;
-      break;
-  }
-
-  if (e.key === " ") {
-    player.shooting = false;
-  }
+  game.playerInputController.keyUp(e.key);
 });
 
 window.onload = () => {
