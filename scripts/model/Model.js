@@ -47,7 +47,7 @@ export class Model {
       this.createExplosion(enemy);
 
       if (this.siEnemies.every(x => x.every(e => e.elem.style.display === "none"))) {
-        game.backgroundController.startScrollVertical();
+        game.startScrollVertical();
       }
     } else {
       this.createExplosion(enemy);

@@ -152,6 +152,38 @@ export class Game {
     player.playerDirection = [0, 0];
     player.shooting = false;
   }
+  /**
+   * Start scroll vertical part of the game. Start to move background, start new enemies movements, show message, etc.
+   */
+  startScrollVertical() {
+    /*
+    Mover background
+    Empiezan a aparecer enemigos de scroll vertical
+    */
+    this.gameState = "SV";
+    player.responsive = false;
+    this.stopAllPlayerMovements();
+    this.showMessage("Stage 1 cleared. All engines ON");
+
+    for (let i = 0; i < this.model.siEnemies.length; i++) {
+      for (let j = 0; j < this.model.siEnemies[i].length; j++) {
+        let enemy = this.model.siEnemies[i][j];
+        if (enemy.moveAnimationId) {
+          cancelAnimationFrame(enemy.moveAnimationId);
+          clearTimeout(enemy.moveAnimationId);
+        }
+        enemy.elem.style.display = "none";
+        this.canvas.removeChild(enemy.elem);
+      }
+    }
+    this.model.siEnemies = [];
+
+    setTimeout(() => {
+      player.responsive = true;
+      this.backgroundController.moveBackgroundDown();
+      this.enemiesMovementController.scrollVerticalEnemiesMovements();
+    }, 3000);
+  }
   //#endregion
   /************************************************************************************************************/
   /*********************************************** GAME STATE *************************************************/
@@ -254,10 +286,9 @@ export class Game {
    */
   cheatToFinal() {
     this.enemiesMovementController.cancelAllEnemiesMovement();
-    cancelAnimationFrame(this.backgroundMoveTimerId);
+    this.backgroundController.stopBackground();
+    this.backgroundController.backgroundBottom = -18625;
     this.model.finalBoss = new Boss();
     this.model.finalBoss.enterGame();
-    this.backgroundBottom = -18625;
-    this.backgroundController.background.style.bottom = `${this.backgroundBottom}px`
   }
 }
