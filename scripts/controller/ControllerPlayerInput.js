@@ -1,4 +1,4 @@
-import { player } from "../main.js";
+import { game, player } from "../main.js";
 
 /*
 Keys direction correspondence

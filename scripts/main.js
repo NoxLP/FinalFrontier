@@ -25,6 +25,9 @@ document.addEventListener("keydown", function (e) {
 });
 
 document.addEventListener("keyup", e => {
+  if(e.key === lastPressedKey)
+    lastPressedKey = "";
+    
   game.playerInputController.keyUp(e.key);
 });
 
