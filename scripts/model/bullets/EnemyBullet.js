@@ -1,5 +1,5 @@
 import { CollisionableObject } from "../base/CollisionableObject.js";
-import { game, player } from "../main.js";
+import { game, player } from "../../main.js";
 
 /**
  * Used to give each enemy an unique id

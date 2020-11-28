@@ -1,7 +1,7 @@
 import { CollisionableObject } from "./base/CollisionableObject.js";
 import { EnemyBullet } from "./bullets/EnemyBullet.js";
-import { game, player } from "./main.js";
-import { Tween } from "./tweens/Tween.js";
+import { game, player } from "../main.js";
+import { Tween } from "../tweens/Tween.js";
 
 /**
  * Used to give each enemy an unique id
@@ -24,7 +24,7 @@ export class Enemy extends CollisionableObject {
     let elem = new Image();
     elem.src = `assets/images/spaceships/enemy${type}.png`;
     elem.classList.add("enemy");
-    super(elem, x, y, game.enemiesSize[type][0], game.enemiesSize[type][1]);
+    super(elem, x, y, game.model.enemiesSize[type][0], game.model.enemiesSize[type][1]);
 
     this.id = lastId++;
     this._type = type;
@@ -188,7 +188,7 @@ export class Enemy extends CollisionableObject {
       topEasing,
       leftEasing,
       checkIfCollideWithPlayerEachFrame,
-      () => { game.svEnemiesPool.storeObject(this); }
+      () => { game.model.svEnemiesPool.storeObject(this); }
     );
 
     this.myMovementTween.start();
@@ -208,7 +208,7 @@ export class Enemy extends CollisionableObject {
     this.audio = game.audio.playAudio("assets/music/sounds/enemyLaser.mp3");
     let bullet, bulletInitialCoords = [this.centerX, this.centerY];
     if (game.gameState === "spaceInvaders") {
-      bullet = game.enemiesBulletsPool.getNewObject(() => new EnemyBullet(
+      bullet = game.model.enemiesBulletsPool.getNewObject(() => new EnemyBullet(
         this.x, this.y + this.height - game.bulletSize[1]), this.x, this.y + this.height - game.bulletSize[1]);
       bullet.move([0, 1]);
     } else {
@@ -216,7 +216,7 @@ export class Enemy extends CollisionableObject {
       switch (this.type) {
         case 0:
           direction = this.normalizeVector([player.x - this.x, player.y - this.y]);
-          bullet = game.enemiesBulletsPool.getNewObject(() => 
+          bullet = game.model.enemiesBulletsPool.getNewObject(() => 
             new EnemyBullet(bulletInitialCoords[0], bulletInitialCoords[1]), 
             bulletInitialCoords[0], 
             bulletInitialCoords[1]);
@@ -224,21 +224,21 @@ export class Enemy extends CollisionableObject {
           break;
         case 1:
           if (Math.random() > 0.5) { //horizontal
-            bullet = game.enemiesBulletsPool.getNewObject(() => new EnemyBullet(bulletInitialCoords[0], bulletInitialCoords[1]), bulletInitialCoords[0], bulletInitialCoords[1]);
+            bullet = game.model.enemiesBulletsPool.getNewObject(() => new EnemyBullet(bulletInitialCoords[0], bulletInitialCoords[1]), bulletInitialCoords[0], bulletInitialCoords[1]);
             bullet.move([1, 0]);
-            bullet = game.enemiesBulletsPool.getNewObject(() => new EnemyBullet(bulletInitialCoords[0], bulletInitialCoords[1]), bulletInitialCoords[0], bulletInitialCoords[1]);
+            bullet = game.model.enemiesBulletsPool.getNewObject(() => new EnemyBullet(bulletInitialCoords[0], bulletInitialCoords[1]), bulletInitialCoords[0], bulletInitialCoords[1]);
             bullet.move([-1, 0]);
           } else { //vertical
-            bullet = game.enemiesBulletsPool.getNewObject(() => new EnemyBullet(bulletInitialCoords[0], bulletInitialCoords[1]), bulletInitialCoords[0], bulletInitialCoords[1]);
+            bullet = game.model.enemiesBulletsPool.getNewObject(() => new EnemyBullet(bulletInitialCoords[0], bulletInitialCoords[1]), bulletInitialCoords[0], bulletInitialCoords[1]);
             bullet.move([0, 1]);
-            bullet = game.enemiesBulletsPool.getNewObject(() => new EnemyBullet(bulletInitialCoords[0], bulletInitialCoords[1]), bulletInitialCoords[0], bulletInitialCoords[1]);
+            bullet = game.model.enemiesBulletsPool.getNewObject(() => new EnemyBullet(bulletInitialCoords[0], bulletInitialCoords[1]), bulletInitialCoords[0], bulletInitialCoords[1]);
             bullet.move([0, -1]);
           }
           break;
         case 2:
           direction = [0, 1];
           for (let i = 0; i < 4; i++) {
-            bullet = game.enemiesBulletsPool.getNewObject(() => new EnemyBullet(bulletInitialCoords[0], bulletInitialCoords[1]), bulletInitialCoords[0], bulletInitialCoords[1]);
+            bullet = game.model.enemiesBulletsPool.getNewObject(() => new EnemyBullet(bulletInitialCoords[0], bulletInitialCoords[1]), bulletInitialCoords[0], bulletInitialCoords[1]);
             bullet.move(direction);
             direction = [direction[1], -direction[0]];
           }

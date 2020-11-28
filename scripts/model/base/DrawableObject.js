@@ -1,4 +1,4 @@
-import { game } from "../main.js";
+import { game } from "../../main.js";
  
 /**
  * All objects that should be draw in the DOM, must inherit from this class

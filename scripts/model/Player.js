@@ -1,5 +1,5 @@
 import { CollisionableObject } from "./base/CollisionableObject.js";
-import { game } from "./main.js";
+import { game } from "../main.js";
 import { PlayerBullet } from "./bullets/PlayerBullet.js";
 
 /**
@@ -10,7 +10,7 @@ export class Player extends CollisionableObject {
     let elem = new Image();
     elem.src = "assets/images/spaceships/player1.png";
     elem.id = "player";
-    super(elem, game.playerInitialCoords[0], game.playerInitialCoords[1], game.playerSize[0], game.playerSize[1]);
+    super(elem, game.model.playerInitialCoords[0], game.model.playerInitialCoords[1], game.model.playerSize[0], game.model.playerSize[1]);
 
     this.lastBulletTime = null;
     this.shootTimer;
@@ -34,8 +34,8 @@ export class Player extends CollisionableObject {
     live.style.filter = "brightness(0.3)";
     live.style.transition = "filter 1s ease-out";
     this._lives--;
-    this.x = game.playerInitialCoords[0];
-    this.y = game.playerInitialCoords[1];
+    this.x = game.model.playerInitialCoords[0];
+    this.y = game.model.playerInitialCoords[1];
   }
   /**
    * Reset player lives to 3
@@ -71,9 +71,8 @@ export class Player extends CollisionableObject {
    */
   shoot() {
     if (this.shooting) {
-      const bullet = new PlayerBullet(
-        this.centerX - (game.bulletSize[0] / 2),
-        this.y - (game.bulletSize[1] * 0.5));
+      let x = this.centerX - (game.bulletSize[0] / 2), y = this.y - (game.bulletSize[1] * 0.5);
+      let bullet = game.model.playerBulletsPool.getNewObject(() => new PlayerBullet(x, y), x, y);
       /*
       Para mover la bala hacia arriba:
       1.- window.requestAnimationFrame(bullet.move)
@@ -90,8 +89,8 @@ export class Player extends CollisionableObject {
    * Move the player spacechip automatically(without animation) to the player initial position
    */
   teleportToInitialPosition() {
-    this.x = game.playerInitialCoords[0];
-    this.y = game.playerInitialCoords[1];
+    this.x = game.model.playerInitialCoords[0];
+    this.y = game.model.playerInitialCoords[1];
     this.elem.style.display = "inline";
     this.responsive = true;
   }

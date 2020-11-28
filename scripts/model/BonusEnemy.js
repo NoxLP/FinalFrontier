@@ -1,5 +1,5 @@
 import { CollisionableObject } from "./base/CollisionableObject.js";
-import { game } from "./main.js";
+import { game } from "../main.js";
 
 /**
  * Class for bonus enemy
@@ -9,7 +9,7 @@ export class BonusEnemy extends CollisionableObject {
     let elem = new Image();
     elem.src = `assets/images/spaceships/bonus.png`;
     elem.classList.add("bonusEnemy");
-    super(elem, -game.bonusSize[0] - 15, 0, game.bonusSize[0], game.bonusSize[1]);
+    super(elem, -game.model.bonusSize[0] - 15, 0, game.model.bonusSize[0], game.model.bonusSize[1]);
 
     this.animationFrameId = null;
   }

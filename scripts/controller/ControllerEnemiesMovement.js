@@ -1,12 +1,11 @@
 import { game } from "../main.js";
 import { easings } from "../tweens/easings.js";
-import { Enemy } from "../Enemy.js";
+import { Enemy } from "../model/Enemy.js";
 
 export class ControllerEnemiesMovement {
-  constructor(enemiesPerRow, width, height) {
-    this.canvasRows = 10;
+  constructor(enemiesPerRow, width, height, canvasRows) {
     this.canvasColumns = enemiesPerRow + 3;
-    this.canvasRowHeight = height / this.canvasRows;
+    this.canvasRowHeight = height / canvasRows;
     this.canvasColumnWidth = width / this.canvasColumns;
     
     this.siEnemyFrameStep = 4;
@@ -81,9 +80,9 @@ export class ControllerEnemiesMovement {
    */
   leftColumnEnemyIsInCanvasLeftColumn() {
     var mostLeftColumnWithEnemyAlive;
-    for (let j = 0; j < game.siEnemiesPerRow; j++) {
-      for (let i = 0; i < game.siEnemies.length; i++) {
-        mostLeftColumnWithEnemyAlive = game.siEnemies[i][j];
+    for (let j = 0; j < game.model.siEnemiesPerRow; j++) {
+      for (let i = 0; i < game.model.siEnemies.length; i++) {
+        mostLeftColumnWithEnemyAlive = game.model.siEnemies[i][j];
         if (mostLeftColumnWithEnemyAlive.elem.style.display !== "none") {
           break;
         }
@@ -103,9 +102,9 @@ export class ControllerEnemiesMovement {
    */
   rightColumnEnemyIsInCanvasRightColumn() {
     let mostLeftColumnWithEnemyAlive;
-    for (let j = game.siEnemiesPerRow - 1; j >= 0; j--) {
-      for (let i = 0; i < game.siEnemies.length; i++) {
-        mostLeftColumnWithEnemyAlive = game.siEnemies[i][j];
+    for (let j = game.model.siEnemiesPerRow - 1; j >= 0; j--) {
+      for (let i = 0; i < game.model.siEnemies.length; i++) {
+        mostLeftColumnWithEnemyAlive = game.model.siEnemies[i][j];
         if (mostLeftColumnWithEnemyAlive.elem.style.display !== "none") {
           break;
         }
@@ -148,10 +147,10 @@ export class ControllerEnemiesMovement {
       0 1 2 3
       ceil(rand*4) => [1, 4] -1 => [0, 3]
        */
-      let shootColumn = Math.ceil(Math.random() * game.siEnemiesPerRow) - 1;
+      let shootColumn = Math.ceil(Math.random() * game.model.siEnemiesPerRow) - 1;
       let lastEnemy;
-      for (let i = 0; i < game.siEnemies.length; i++) {
-        let enemy = game.siEnemies[i][shootColumn];
+      for (let i = 0; i < game.model.siEnemies.length; i++) {
+        let enemy = game.model.siEnemies[i][shootColumn];
         if (enemy && enemy.elem.style.display !== "none") {
           lastEnemy = enemy;
         } else {
@@ -163,9 +162,9 @@ export class ControllerEnemiesMovement {
         lastEnemy.shoot();
     }, 1500);
 
-    for (let i = 0; i < game.siEnemies.length; i++) {
-      for (let j = 0; j < game.siEnemies[i].length; j++) {
-        let enemy = game.siEnemies[i][j];
+    for (let i = 0; i < game.model.siEnemies.length; i++) {
+      for (let j = 0; j < game.model.siEnemies[i].length; j++) {
+        let enemy = game.model.siEnemies[i][j];
         enemy.collisionable = true;
         enemy.elem.style.display = "inline";
         enemy.moveEnemyLeftToRight();
@@ -175,34 +174,34 @@ export class ControllerEnemiesMovement {
   /**
    * Move bonus enemy
    */
-  moveBonusEnemy() { setTimeout(() => { game.bonus.move(); }, (Math.random() * this.bonusTimeout * 0.5) + (this.bonusTimeout * 0.5)); }
+  moveBonusEnemy() { setTimeout(() => { game.model.bonus.move(); }, (Math.random() * this.bonusTimeout * 0.5) + (this.bonusTimeout * 0.5)); }
   /**
    * Cancel movement of all enemies
    */
   cancelAllEnemiesMovement() {
-    if (game.bonus) {
-      game.bonus.cancelAnimation();
-      game.bonus.resetPosition();
+    if (game.model.bonus) {
+      game.model.bonus.cancelAnimation();
+      game.model.bonus.resetPosition();
     }
 
-    if (game.finalBoss && game.finalBoss.elem.style.display !== "none") {
-      game.finalBoss.myMovementTween.stop();
+    if (game.model.finalBoss && game.model.finalBoss.elem.style.display !== "none") {
+      game.model.finalBoss.myMovementTween.stop();
       clearTimeout(this.bossAnimationTimerId);
       this.bossAnimationTimerId = null;
     }
 
     if (game.gameState === "spaceInvaders") {
-      for (let i = 0; i < game.siEnemies.length; i++) {
-        for (let j = 0; j < game.siEnemies[i].length; j++) {
-          cancelAnimationFrame(game.siEnemies[i][j].moveAnimationId);
-          clearTimeout(game.siEnemies[i][j].moveAnimationId);
+      for (let i = 0; i < game.model.siEnemies.length; i++) {
+        for (let j = 0; j < game.model.siEnemies[i].length; j++) {
+          cancelAnimationFrame(game.model.siEnemies[i][j].moveAnimationId);
+          clearTimeout(game.model.siEnemies[i][j].moveAnimationId);
         }
       }
       clearInterval(this.spaceInvadersEnemiesShootsTimerId);
     } else {
       clearTimeout(this.svEnemiesMoveTimerId);
       this.svEnemiesMoveTimerId = null;
-      game.svEnemiesPool.showingObjects.forEach(x => {
+      game.model.svEnemiesPool.showingObjects.forEach(x => {
         clearTimeout(x.moveAnimationId);
         if (x.myMovementTween)
           x.myMovementTween.stop();
@@ -223,7 +222,7 @@ export class ControllerEnemiesMovement {
     let numberOfEnemies = Math.round((Math.random() * 3) + 2);
 
     for (let i = 0; i < numberOfEnemies; i++) {
-      let enemy = game.svEnemiesPool.getNewObject(() => new Enemy(shiptype, initial[0], initial[1]), initial[0], initial[1]);
+      let enemy = game.model.svEnemiesPool.getNewObject(() => new Enemy(shiptype, initial[0], initial[1]), initial[0], initial[1]);
       enemy.type = shiptype;
       enemy.elem.classList.add("enemy");
 
@@ -257,7 +256,7 @@ export class ControllerEnemiesMovement {
     if (index === this.bossPaths.length)
       index = 0;
 
-    game.finalBoss.moveToPoint(
+    game.model.finalBoss.moveToPoint(
       this.bossPaths[index][0],
       this.bossPaths[index][1][0],
       this.bossPaths[index][1][1]

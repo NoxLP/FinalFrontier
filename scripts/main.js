@@ -1,6 +1,6 @@
 import { Menu } from "./Menu.js";
 import { Game } from "./controller/Game.js";
-import { Player } from "./Player.js";
+import { Player } from "./model/Player.js";
 
 /**
  * Object that controls all general aspects of the game

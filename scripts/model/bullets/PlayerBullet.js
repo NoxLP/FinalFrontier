@@ -1,5 +1,5 @@
 import { CollisionableObject } from "../base/CollisionableObject.js";
-import { game } from "../main.js";
+import { game } from "../../main.js";
 
 /**
  * Class for player bullets
@@ -19,10 +19,10 @@ export class PlayerBullet extends CollisionableObject {
   isCollidingWithAnEnemy() {
     //This could be more efficient storing enemies by their coords in some sort of grid, so one should only check for collisions in the same column of the bullet
     //No time for doing the above
-    for (let i = 0; i < game.siEnemies.length; i++) {
-      for (let j = 0; j < game.siEnemies[i].length; j++) {
-        if (this.collideWith(game.siEnemies[i][j])) {
-          return game.siEnemies[i][j];
+    for (let i = 0; i < game.model.siEnemies.length; i++) {
+      for (let j = 0; j < game.model.siEnemies[i].length; j++) {
+        if (this.collideWith(game.model.siEnemies[i][j])) {
+          return game.model.siEnemies[i][j];
         }
       }
     }
@@ -32,9 +32,9 @@ export class PlayerBullet extends CollisionableObject {
    * Returns true if the bullet is colliding with a "scroll vertical" part enemy
    */
   isCollidingWithASVEnemy() {
-    for (let i = 0; i < game.svEnemiesPool.showingObjects.length; i++) {
-      if (this.collideWith(game.svEnemiesPool.showingObjects[i]))
-        return game.svEnemiesPool.showingObjects[i];
+    for (let i = 0; i < game.model.svEnemiesPool.showingObjects.length; i++) {
+      if (this.collideWith(game.model.svEnemiesPool.showingObjects[i]))
+        return game.model.svEnemiesPool.showingObjects[i];
     }
   }
   /**
@@ -53,28 +53,32 @@ export class PlayerBullet extends CollisionableObject {
     */
     if (this.y + this.height > 0) {
       this.y -= game.bulletStep;
-      if (!game.finalBoss || game.finalBoss.elem.style.display === "none") {
+      if (!game.model.finalBoss || game.model.finalBoss.elem.style.display === "none") {
         var collidingEnemy = game.gameState === "spaceInvaders" ? this.isCollidingWithAnEnemy() : this.isCollidingWithASVEnemy();
 
         if (collidingEnemy) {
-          game.canvas.removeChild(this.elem);
-          game.removeEnemy(collidingEnemy);
-        } else if (this.collideWith(game.bonus)) {
-          game.removeBonusEnemy();
-          game.canvas.removeChild(this.elem);
+          //game.canvas.removeChild(this.elem);
+          game.model.playerBulletsPool.storeObject(this);
+          game.model.removeEnemy(collidingEnemy);
+        } else if (this.collideWith(game.model.bonus)) {
+          game.model.removeBonusEnemy();
+          //game.canvas.removeChild(this.elem);
+          game.model.playerBulletsPool.storeObject(this);
         } else {
           window.requestAnimationFrame(() => { this.move(); });
         }
       } else {
-        if (this.collideWith(game.finalBoss)) {
-          game.finalBoss.bossHitted(this);
-          game.canvas.removeChild(this.elem);
+        if (this.collideWith(game.model.finalBoss)) {
+          game.model.finalBoss.bossHitted(this);
+          //game.canvas.removeChild(this.elem);
+          game.model.playerBulletsPool.storeObject(this);
         } else {
           window.requestAnimationFrame(() => { this.move(); });
         }
       }
     } else {
-      game.canvas.removeChild(this.elem);
+      //game.canvas.removeChild(this.elem);
+      game.model.playerBulletsPool.storeObject(this);
     }
   }
 }

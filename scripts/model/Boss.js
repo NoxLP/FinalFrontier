@@ -1,7 +1,7 @@
 import { CollisionableObject } from "./base/CollisionableObject.js";
-import { game, player } from "./main.js";
-import { Tween } from "./tweens/Tween.js";
-import { easings } from "./tweens/easings.js";
+import { game, player } from "../main.js";
+import { Tween } from "../tweens/Tween.js";
+import { easings } from "../tweens/easings.js";
 import { EnemyBullet } from "./bullets/EnemyBullet.js";
 
 /**
@@ -41,7 +41,7 @@ export class Boss extends CollisionableObject {
   set health(value) {
     this._health = value;
     if (this._health === 0) {
-      game.createExplosion(this);
+      game.model.createExplosion(this);
       this.hide();
       game.playerWins();
     }
@@ -83,7 +83,7 @@ export class Boss extends CollisionableObject {
    * @param {PlayerBullet} bullet Bullet that hits the boss
    */
   bossHitted(bullet) {
-    game.createExplosion(bullet);
+    game.model.createExplosion(bullet);
     this.health--;
   }
   /**
@@ -135,7 +135,7 @@ export class Boss extends CollisionableObject {
       this._currentPattern = 0;
 
     this._shootPatterns[this._currentPattern].forEach(direction => {
-      bullet = game.enemiesBulletsPool.getNewObject(() => new EnemyBullet(
+      bullet = game.model.enemiesBulletsPool.getNewObject(() => new EnemyBullet(
         this.centerX, this.centerY, this.x, this.y + this.height - game.bulletSize[1]));
       bullet.move(direction);
     });
