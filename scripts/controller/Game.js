@@ -17,6 +17,7 @@ export class Game {
    * @param {number} enemiesPerRow Number of enemies per row when the game is at the "space invaders" part.
    */
   constructor(enemiesPerRow) {
+    enemiesPerRow = enemiesPerRow > 8 ? 8 : enemiesPerRow;
     this.gameState = "spaceInvaders";
     this.step = 9;
     this.bulletStep = 15;
@@ -24,16 +25,15 @@ export class Game {
     this.bulletSize = [60, 50];
 
     this.canvas = document.getElementById("game");
-    this.canvasRows = 10;
     this.width = 1900;
     this.height = 870;
     this.canvas.style.width = `${this.width}px`;
     this.canvas.style.height = `${this.height}px`;
 
-    this.enemiesMovementController = new ControllerEnemiesMovement(enemiesPerRow, this.width, this.height, this.canvasRows);
+    this.enemiesMovementController = new ControllerEnemiesMovement(enemiesPerRow, this.width, this.height);
     this.backgroundController = new ControllerBackground();
     this.playerInputController = new ControllerPlayerInput();
-    this.model = new Model(enemiesPerRow, this.width, this.canvasRows, this.enemiesMovementController.canvasRowHeight);
+    this.model = new Model(enemiesPerRow, this.width, this.height);
 
     this._points = 0;
     this.pointsCounter = new PointsCounter(50);
@@ -62,19 +62,6 @@ export class Game {
   /************************************************************************************************************/
   /************************************************* HELPERS **************************************************/
   //#region
-  /**
-   * Returns DOM coordinates for initial enemy position. Used in "space invaders" part to calculate the coordinates of an enemy based on its position in the array siEnemies.
-   * @param {number} row 
-   * @param {number} column 
-   */
-  calculateCoordinatesByPosition(row, column) {
-    //margen + ((total ancho / numero de naves) * numero nave actual)
-    const enemyType = Math.ceil(row / 2);
-    return [
-      (this.enemiesMovementController.canvasColumnWidth * (column + 0.5)) - (this.model.enemiesSize[enemyType][0] / 2),
-      (this.enemiesMovementController.canvasRowHeight * (row + 1.5)) - (this.model.enemiesSize[enemyType][1] / 2)
-    ];
-  }
   /**
    * An enemy collides with player. Kill both the enemy and the player, player lose a live, the game reset or is game over if the player have no more lives.
    * @param {Enemy} enemy Enemy that collides with player
@@ -127,7 +114,7 @@ export class Game {
     if (player.lives > 0) {
       setTimeout(() => { this.showMessage("You lost a life"); }, 500);
 
-      this.model.svEnemiesPool.storeAllObjects();
+      this.model.enemiesPool.storeAllObjects();
       setTimeout(() => {
         if (this.model.finalBoss && this.model.finalBoss.elem.display !== "none") {
           this.enemiesMovementController.bossMovements(0);
@@ -277,7 +264,8 @@ export class Game {
     this.audio.changeMusicByGameState();
 
     if (!this.model.siEnemies || this.model.siEnemies.length === 0)
-      this.model.createEnemies();
+      this.model.grid.initSIEnemiesLocations();
+      //this.model.createEnemies();
     this.enemiesMovementController.moveSpaceInvadersEnemies();
     this.model.createBonusEnemy();
   }

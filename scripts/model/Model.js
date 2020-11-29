@@ -2,16 +2,19 @@ import { game, player } from "../main.js";
 import { Enemy } from "../model/Enemy.js";
 import { BonusEnemy } from "../model/BonusEnemy.js";
 import { ObjectPool } from "../model/ObjectPool.js";
+import { Grid } from "./Grid.js";
 
 export class Model {
-  constructor(enemiesPerRow, canvasWidth, canvasRows, canvasRowHeight) {
+  constructor(enemiesPerRow, canvasWidth, canvasHeight) {
     this.siEnemiesPerRow = enemiesPerRow;
-    this.siEnemies = [];
+    //this.siEnemies = [];
     this.enemiesSize = [
       [50, 50],
       [65, 65],
       [80, 80]
     ];
+
+    this.grid = new Grid(canvasWidth, canvasHeight, this);
 
     this.finalBoss;
 
@@ -22,10 +25,10 @@ export class Model {
     this.playerSize = [80, 80];
     this.playerInitialCoords = [
       (canvasWidth / 2) - (this.playerSize[0] / 2),
-      (canvasRowHeight * (canvasRows - 1)) + (canvasRowHeight / 2) - (this.playerSize[1] / 2)
+      (this.grid.canvasRowHeight * (this.grid.canvasRows - 1)) + (this.grid.canvasRowHeight / 2) - (this.playerSize[1] / 2)
     ];
 
-    this.svEnemiesPool = new ObjectPool();
+    this.enemiesPool = new ObjectPool();
     this.enemiesBulletsPool = new ObjectPool();
     this.playerBulletsPool = new ObjectPool();
   }
@@ -51,7 +54,7 @@ export class Model {
       }
     } else {
       this.createExplosion(enemy);
-      this.svEnemiesPool.storeObject(enemy);
+      this.enemiesPool.storeObject(enemy);
     }
   }
   /**

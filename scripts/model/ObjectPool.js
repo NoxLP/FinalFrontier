@@ -15,6 +15,7 @@ export class ObjectPool {
    * @param {number} y Y coordinate where to send the retrieved object in case there are objects stored in the pool
    */
   getNewObject(objCreationCallback, x, y) {
+    console.log('NE WOBJ')
     if (this.hiddenObjects.length > 0) {
       let obj = this.hiddenObjects.pop();
       this.showingObjects.push(obj);

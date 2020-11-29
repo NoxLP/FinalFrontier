@@ -32,9 +32,9 @@ export class PlayerBullet extends CollisionableObject {
    * Returns true if the bullet is colliding with a "scroll vertical" part enemy
    */
   isCollidingWithASVEnemy() {
-    for (let i = 0; i < game.model.svEnemiesPool.showingObjects.length; i++) {
-      if (this.collideWith(game.model.svEnemiesPool.showingObjects[i]))
-        return game.model.svEnemiesPool.showingObjects[i];
+    for (let i = 0; i < game.model.enemiesPool.showingObjects.length; i++) {
+      if (this.collideWith(game.model.enemiesPool.showingObjects[i]))
+        return game.model.enemiesPool.showingObjects[i];
     }
   }
   /**

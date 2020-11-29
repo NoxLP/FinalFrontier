@@ -21,6 +21,7 @@ export class Enemy extends CollisionableObject {
    * @param {number} column Column index of enemy if in "space invaders" part
    */
   constructor(type, x, y, row, column) {
+    console.log("New enemy ", type, x, y, row, column)
     let elem = new Image();
     elem.src = `assets/images/spaceships/enemy${type}.png`;
     elem.classList.add("enemy");
@@ -115,7 +116,7 @@ export class Enemy extends CollisionableObject {
    */
   moveEnemyLeftToRight() {
     if (!game.enemiesMovementController.rightColumnEnemyIsInCanvasRightColumn()) {
-      const nextCanvasColumnX = game.enemiesMovementController.getXOfCanvasColumn(this.canvasColumn + 1);
+      const nextCanvasColumnX = game.model.grid.getXOfCanvasColumn(this.canvasColumn + 1);
       this.moveRightToTarget(nextCanvasColumnX);
     } else {
       this.lastMove = "right";
@@ -127,7 +128,7 @@ export class Enemy extends CollisionableObject {
    */
   moveEnemyRightToLeft() {
     if (!game.enemiesMovementController.leftColumnEnemyIsInCanvasLeftColumn()) {
-      const nextCanvasColumnX = game.enemiesMovementController.getXOfCanvasColumn(this.canvasColumn - 1);
+      const nextCanvasColumnX = game.model.grid.getXOfCanvasColumn(this.canvasColumn - 1);
       this.moveLeftToTarget(nextCanvasColumnX);
     } else {
       this.lastMove = "left";
@@ -138,14 +139,14 @@ export class Enemy extends CollisionableObject {
    * Move enemy down. Part of the classical movement pattern
    */
   moveEnemyDown() {
-    const nextCanvasRowY = game.enemiesMovementController.getYOfCanvasRow(this.canvasRow + 1);
+    const nextCanvasRowY = game.model.grid.getYOfCanvasRow(this.canvasRow + 1);
     this.moveDownToTarget(nextCanvasRowY);
   }
   /**
    * Move enemy to the initial position automatically, without animation. Used in "space invaders" part to reset enemies movement.
    */
   teleportToInitialPosition() {
-    let coords = game.calculateCoordinatesByPosition(this.row, this.column);
+    let coords = game.model.grid.calculateCoordinatesByPosition(this.row, this.column);
     this.x = coords[0];
     this.y = coords[1];
     if (this.elem.style.display === "none") {
@@ -188,7 +189,7 @@ export class Enemy extends CollisionableObject {
       topEasing,
       leftEasing,
       checkIfCollideWithPlayerEachFrame,
-      () => { game.model.svEnemiesPool.storeObject(this); }
+      () => { game.model.enemiesPool.storeObject(this); }
     );
 
     this.myMovementTween.start();

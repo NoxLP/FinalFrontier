@@ -3,11 +3,7 @@ import { easings } from "../tweens/easings.js";
 import { Enemy } from "../model/Enemy.js";
 
 export class ControllerEnemiesMovement {
-  constructor(enemiesPerRow, width, height, canvasRows) {
-    this.canvasColumns = enemiesPerRow + 3;
-    this.canvasRowHeight = height / canvasRows;
-    this.canvasColumnWidth = width / this.canvasColumns;
-    
+  constructor(enemiesPerRow, width, height) {
     this.siEnemyFrameStep = 4;
     this.svEnemySpeed = 200;
     this.enemyBulletStep = 9;
@@ -65,16 +61,6 @@ export class ControllerEnemiesMovement {
     ];
     this.bossAnimationTimerId;
   }
-  /**
-   * Get left-most x coordinate of column
-   * @param {number} column Column index
-   */
-  getXOfCanvasColumn(column) { return this.canvasColumnWidth * (column + 0.5); }
-  /**
-   * Get top-most y coordinate of row
-   * @param {number} row Row index
-   */
-  getYOfCanvasRow(row) { return this.canvasRowHeight * (row + 0.5); }
   /**
    * Used in "space invaders" part to check if the enemies from the most left column are at the left limit of the screen, so enemies should move down.
    */
@@ -201,7 +187,7 @@ export class ControllerEnemiesMovement {
     } else {
       clearTimeout(this.svEnemiesMoveTimerId);
       this.svEnemiesMoveTimerId = null;
-      game.model.svEnemiesPool.showingObjects.forEach(x => {
+      game.model.enemiesPool.showingObjects.forEach(x => {
         clearTimeout(x.moveAnimationId);
         if (x.myMovementTween)
           x.myMovementTween.stop();
@@ -222,7 +208,7 @@ export class ControllerEnemiesMovement {
     let numberOfEnemies = Math.round((Math.random() * 3) + 2);
 
     for (let i = 0; i < numberOfEnemies; i++) {
-      let enemy = game.model.svEnemiesPool.getNewObject(() => new Enemy(shiptype, initial[0], initial[1]), initial[0], initial[1]);
+      let enemy = game.model.enemiesPool.getNewObject(() => new Enemy(shiptype, initial[0], initial[1]), initial[0], initial[1]);
       enemy.type = shiptype;
       enemy.elem.classList.add("enemy");
 
