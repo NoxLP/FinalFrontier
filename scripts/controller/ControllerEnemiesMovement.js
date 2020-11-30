@@ -69,51 +69,6 @@ export class ControllerEnemiesMovement {
     this.grid;
   }
   /**
-   * Used in "space invaders" part to check if the enemies from the most left column are at the left limit of the screen, so enemies should move down.
-   */
-  leftColumnEnemyIsInCanvasLeftColumn() {
-    /*var mostLeftColumnWithEnemyAlive;
-    for (let j = 0; j < game.model.siEnemiesPerRow; j++) {
-      for (let i = 0; i < game.model.siEnemies.length; i++) {
-        mostLeftColumnWithEnemyAlive = game.model.siEnemies[i][j];
-        if (mostLeftColumnWithEnemyAlive.elem.style.display !== "none") {
-          break;
-        }
-      }
-      if (mostLeftColumnWithEnemyAlive.elem.style.display !== "none") {
-        break;
-      }
-    }
-
-    if (!mostLeftColumnWithEnemyAlive)
-      return false;
-
-    return mostLeftColumnWithEnemyAlive.x > 0 && mostLeftColumnWithEnemyAlive.x < this.canvasColumnWidth;*/
-  }
-  /**
-   * Used in "space invaders" part to check if the enemies from the most right column are at the right limit of the screen, so enemies should move down.
-   */
-  rightColumnEnemyIsInCanvasRightColumn() {
-    /*let mostLeftColumnWithEnemyAlive;
-    for (let j = game.model.siEnemiesPerRow - 1; j >= 0; j--) {
-      for (let i = 0; i < game.model.siEnemies.length; i++) {
-        mostLeftColumnWithEnemyAlive = game.model.siEnemies[i][j];
-        if (mostLeftColumnWithEnemyAlive.elem.style.display !== "none") {
-          break;
-        }
-      }
-      if (mostLeftColumnWithEnemyAlive.elem.style.display !== "none") {
-        break;
-      }
-    }
-
-    if (!mostLeftColumnWithEnemyAlive)
-      return false;
-
-    return mostLeftColumnWithEnemyAlive.x > this.canvasColumnWidth * (this.canvasColumns - 1) &&
-      mostLeftColumnWithEnemyAlive.x < this.canvasColumnWidth * this.canvasColumns;*/
-  }
-  /**
    * Move all enemies in the "space invaders" pattern
    */
   moveSpaceInvadersEnemies() {
@@ -191,7 +146,7 @@ export class ControllerEnemiesMovement {
       let destination = this.siEnemiesMovementDown ? [x.row + 1, x.column] :
         this.siEnemiesMovementDirection ? [x.row, x.column + 1] : [x.row, x.column - 1];
       if(idx === arr.length - 1) {
-        this.grid.moveEnemyTo([x.row, x.column], destination, () => { this.siEnemiesMovementTimerId = setTimeout(() => { this.moveSpaceInvadersEnemies(); }, 1000); });
+        this.grid.moveEnemyTo([x.row, x.column], destination, () => { this.siEnemiesMovementTimerId = setTimeout(() => { this.moveSpaceInvadersEnemies(); }, 500); });
         updateDirectionIfNeeded(x);
       } else {
         this.grid.moveEnemyTo([x.row, x.column], destination);

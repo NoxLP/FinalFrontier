@@ -21,6 +21,11 @@ export class Grid {
     this._grid = [...Array(this.canvasRows)].map(x => [...Array(this.canvasColumns)]);
   }
   getCell(row, column) { return this._grid[row][column]; }
+  getCellByCoordinates(x, y) {
+    let row = Math.floor(y / this.canvasRowHeight);
+    let col = Math.floor(x / this.canvasColumnWidth);
+    return this._grid[row][col];
+  }
   /**
    * Get center x coordinate of column
    * @param {number} column Column index
@@ -120,12 +125,26 @@ export class Grid {
     return null;
   }
   moveEnemyTo(originCell, destinationCell, finalCallback) {
-    console.log("_moveEnemyTo ", originCell, destinationCell);
-
-    //*************** TODO
-    //Remove enemy when next cell is out of grid (should only happens when going down)
+    //console.log("_moveEnemyTo ", originCell, destinationCell);
 
     let enemy = this._grid[originCell[0]][originCell[1]];
+
+    if(destinationCell[0] > this.canvasRows - 1) {
+      if(finalCallback) {
+        finalCallback = () => {
+          this._model.enemiesPool.storeObject(enemy);
+          finalCallback();
+        };
+      } else {
+        finalCallback = () => { this._model.enemiesPool.storeObject(enemy); };
+      }
+    } else {
+      this._grid[destinationCell[0]][destinationCell[1]] = enemy;
+      enemy.row = destinationCell[0];
+      enemy.column = destinationCell[1];
+    }
+    this._grid[originCell[0]][originCell[1]] = null;
+    
     enemy.moveToPoint(
       this.calculateCoordinatesByPosition(enemy.type, destinationCell[0], destinationCell[1]),
       0.2,
@@ -133,9 +152,5 @@ export class Grid {
       easings.linear,
       finalCallback,
       0);
-    this._grid[destinationCell[0]][destinationCell[1]] = enemy;
-    this._grid[originCell[0]][originCell[1]] = null;
-    enemy.row = destinationCell[0];
-    enemy.column = destinationCell[1];
   }
 }
