@@ -30,10 +30,11 @@ export class Game {
     this.canvas.style.width = `${this.width}px`;
     this.canvas.style.height = `${this.height}px`;
 
-    this.enemiesMovementController = new ControllerEnemiesMovement(enemiesPerRow, this.width, this.height);
+    this.enemiesMovementController = new ControllerEnemiesMovement(this.width, this.height);
     this.backgroundController = new ControllerBackground();
     this.playerInputController = new ControllerPlayerInput();
     this.model = new Model(enemiesPerRow, this.width, this.height);
+    this.enemiesMovementController.grid = this.model.grid;
 
     this._points = 0;
     this.pointsCounter = new PointsCounter(50);
@@ -257,6 +258,7 @@ export class Game {
    * Start the game. Called when the player clicks on the menu start button.
    */
   start() {
+    console.log(this.enemiesMovementController.grid)
     this.backgroundController.stopBackground();
     this.gameState = "spaceInvaders";
     player.responsive = true;

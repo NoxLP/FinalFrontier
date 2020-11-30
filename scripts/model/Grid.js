@@ -1,4 +1,5 @@
 import { Enemy } from "./Enemy.js";
+import { easings } from "../tweens/easings.js";
 
 /*
 2 ways
@@ -19,6 +20,7 @@ export class Grid {
     this._model = model;
     this._grid = [...Array(this.canvasRows)].map(x => [...Array(this.canvasColumns)]);
   }
+  getCell(row, column) { return this._grid[row][column]; }
   /**
    * Get center x coordinate of column
    * @param {number} column Column index
@@ -34,19 +36,17 @@ export class Grid {
    * @param {number} row 
    * @param {number} column 
    */
-  calculateCoordinatesByPosition(row, column) {
+  calculateCoordinatesByPosition(type, row, column) {
     //margen + ((total ancho / numero de naves) * numero nave actual)
-    console.log("calculate")
-    const enemyType = Math.ceil(row / 2);
     return [
-      this.getXOfCanvasColumn(column) - (this._model.enemiesSize[enemyType][0] / 2),
-      this.getYOfCanvasRow(row) - (this._model.enemiesSize[enemyType][1] / 2)
+      this.getXOfCanvasColumn(column) - (this._model.enemiesSize[type][0] / 2),
+      this.getYOfCanvasRow(row) - (this._model.enemiesSize[type][1] / 2)
     ];
   }
   /**
    * Teleport object to cell
    * @param {DrawableObject} object Object to teleport
-   * @param {array} cell Coordinates [x,y] of grid cell to teleport object to
+   * @param {array} cell Coordinates [x,y] of _grid cell to teleport object to
    */
   teleportToCell(object, x, y) {
     if (this._grid[x][y]) throw `Tried to teleport object to cell [${x}, ${y}] when there was an object already at that cell`;
@@ -54,14 +54,14 @@ export class Grid {
     object.row = y;
     object.column = x;
 
-    let coords = this.calculateCoordinatesByPosition(i, j);
+    let coords = this.calculateCoordinatesByPosition(object.type, i, j);
     object.x = coords[0];
     object.y = coords[1];
 
     this._grid[x][y] = object;
   }
   /**
-   * Initialize space invaders enemies location and store it in the correspondent grid cell
+   * Initialize space invaders enemies location and store it in the correspondent _grid cell
    * @param {array} enemies 2d array with si enemies. 3 rows with the 3 types of enemies, and "enemiesPerRow" columns
    */
   initSIEnemiesLocations() {
@@ -77,15 +77,65 @@ export class Grid {
     
     type = roundUp(row / 2)
     */
-    console.log("PRE CREACION ", this._grid)
     for (let i = 0; i < 5; i++) {
-      console.log("i",i)
       for (let j = 0; j < this._model.siEnemiesPerRow; j++) {
-        console.log("j",j)
-        let coords = this.calculateCoordinatesByPosition(i, j);
-        this._grid[i][j] = this._model.enemiesPool.getNewObject(() => new Enemy(Math.ceil(i / 2), coords[0], coords[1], i, j));
+        let type = Math.ceil(i / 2);
+        let coords = this.calculateCoordinatesByPosition(type, i + 1, j);
+        this._grid[i + 1][j] = this._model.enemiesPool.getNewObject(() => new Enemy(type, coords[0], coords[1], i + 1, j));
+        console.log(`CREADO en ${i + 1}, ${j}: `, JSON.stringify(this._grid[i + 1][j]), null, 2)
       }
     }
-    console.log("ENEMIGOS CREADOS ", this._grid);
+    console.log("ENEMIGOS CREADOS ", JSON.stringify(this._grid, null, 2));
+  }
+  removeEnemy(enemy) {
+    this._grid[enemy.row][enemy.column] = null;
+  }
+  someEnemyIsAlive() {
+    return this._grid.some(x => x.some(x => x));
+  }
+  getMostTopEnemy() {
+    for (let row = 0; row < this.canvasRows; row++) {
+      let index = this._grid[row].findIndex(x => x);
+      if (index !== -1)
+        return this._grid[row][index];
+    }
+    return null;
+  }
+  getMostRightEnemy() {
+    for (let column = this.canvasColumns - 1; column >= 0; column--) {
+      for (let row = 0; row < this.canvasRows; row++) {
+        if (this._grid[row][column])
+          return this._grid[row][column];
+      }
+    }
+    return null;
+  }
+  getMostLeftEnemy() {
+    for (let column = 0; column < this.canvasColumns; column++) {
+      for (let row = 0; row < this.canvasRows; row++) {
+        if (this._grid[row][column])
+          return this._grid[row][column];
+      }
+    }
+    return null;
+  }
+  moveEnemyTo(originCell, destinationCell, finalCallback) {
+    console.log("_moveEnemyTo ", originCell, destinationCell);
+
+    //*************** TODO
+    //Remove enemy when next cell is out of grid (should only happens when going down)
+
+    let enemy = this._grid[originCell[0]][originCell[1]];
+    enemy.moveToPoint(
+      this.calculateCoordinatesByPosition(enemy.type, destinationCell[0], destinationCell[1]),
+      0.2,
+      easings.linear,
+      easings.linear,
+      finalCallback,
+      0);
+    this._grid[destinationCell[0]][destinationCell[1]] = enemy;
+    this._grid[originCell[0]][originCell[1]] = null;
+    enemy.row = destinationCell[0];
+    enemy.column = destinationCell[1];
   }
 }

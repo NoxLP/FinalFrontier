@@ -21,7 +21,6 @@ export class Enemy extends CollisionableObject {
    * @param {number} column Column index of enemy if in "space invaders" part
    */
   constructor(type, x, y, row, column) {
-    console.log("New enemy ", type, x, y, row, column)
     let elem = new Image();
     elem.src = `assets/images/spaceships/enemy${type}.png`;
     elem.classList.add("enemy");
@@ -146,7 +145,7 @@ export class Enemy extends CollisionableObject {
    * Move enemy to the initial position automatically, without animation. Used in "space invaders" part to reset enemies movement.
    */
   teleportToInitialPosition() {
-    let coords = game.model.grid.calculateCoordinatesByPosition(this.row, this.column);
+    let coords = game.model.grid.calculateCoordinatesByPosition(this.type, this.row, this.column);
     this.x = coords[0];
     this.y = coords[1];
     if (this.elem.style.display === "none") {
@@ -162,7 +161,7 @@ export class Enemy extends CollisionableObject {
    * @param {function} leftEasing Easing function to be applied to the X axis
    * @param {function} topEasing Easing function to be applied to the Y axis
    */
-  moveToPoint(point, speedFactor, leftEasing, topEasing) {
+  moveToPoint(point, speedFactor, leftEasing, topEasing, finalCallback, shoots = 2) {
     if (this.myMovementTween) {
       //if enemy is already in the middle of a movement tween, better to return false. If want to cancel the current tween, one can always pause or stop it before beginning a new movement
       if (this.myMovementTween.running)
@@ -185,11 +184,11 @@ export class Enemy extends CollisionableObject {
       this,
       speedFactor,
       point,
-      2,
+      shoots,
       topEasing,
       leftEasing,
       checkIfCollideWithPlayerEachFrame,
-      () => { game.model.enemiesPool.storeObject(this); }
+      finalCallback
     );
 
     this.myMovementTween.start();

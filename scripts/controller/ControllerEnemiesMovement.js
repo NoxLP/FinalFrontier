@@ -3,10 +3,15 @@ import { easings } from "../tweens/easings.js";
 import { Enemy } from "../model/Enemy.js";
 
 export class ControllerEnemiesMovement {
-  constructor(enemiesPerRow, width, height) {
+  constructor(width, height) {
     this.siEnemyFrameStep = 4;
+    this.siEnemiesMovementDirection = true;
+    this.siEnemiesMovementDown = false;
+    this.siEnemiesMovementTimeout = 500;
+    this.siEnemiesMovementTimerId;
+    this.siEnemiesShootsTimerId;
+
     this.svEnemySpeed = 200;
-    this.enemyBulletStep = 9;
     this.svEnemiesMoveTimerId = null;
     this.svEnemiesPaths = [
       [
@@ -49,7 +54,7 @@ export class ControllerEnemiesMovement {
       [[-80, height * 0.75], [width * 0.8, -80], [easings.linear, easings.easeInCirc]]
     ];
 
-    this.spaceInvadersEnemiesShootsTimerId;
+    this.enemyBulletStep = 9;
 
     this.bonusTimeout = 10000;
 
@@ -60,12 +65,14 @@ export class ControllerEnemiesMovement {
       [[1000, 30], [easings.easeOutSine, easings.linear]]
     ];
     this.bossAnimationTimerId;
+
+    this.grid;
   }
   /**
    * Used in "space invaders" part to check if the enemies from the most left column are at the left limit of the screen, so enemies should move down.
    */
   leftColumnEnemyIsInCanvasLeftColumn() {
-    var mostLeftColumnWithEnemyAlive;
+    /*var mostLeftColumnWithEnemyAlive;
     for (let j = 0; j < game.model.siEnemiesPerRow; j++) {
       for (let i = 0; i < game.model.siEnemies.length; i++) {
         mostLeftColumnWithEnemyAlive = game.model.siEnemies[i][j];
@@ -81,13 +88,13 @@ export class ControllerEnemiesMovement {
     if (!mostLeftColumnWithEnemyAlive)
       return false;
 
-    return mostLeftColumnWithEnemyAlive.x > 0 && mostLeftColumnWithEnemyAlive.x < this.canvasColumnWidth;
+    return mostLeftColumnWithEnemyAlive.x > 0 && mostLeftColumnWithEnemyAlive.x < this.canvasColumnWidth;*/
   }
   /**
    * Used in "space invaders" part to check if the enemies from the most right column are at the right limit of the screen, so enemies should move down.
    */
   rightColumnEnemyIsInCanvasRightColumn() {
-    let mostLeftColumnWithEnemyAlive;
+    /*let mostLeftColumnWithEnemyAlive;
     for (let j = game.model.siEnemiesPerRow - 1; j >= 0; j--) {
       for (let i = 0; i < game.model.siEnemies.length; i++) {
         mostLeftColumnWithEnemyAlive = game.model.siEnemies[i][j];
@@ -104,12 +111,13 @@ export class ControllerEnemiesMovement {
       return false;
 
     return mostLeftColumnWithEnemyAlive.x > this.canvasColumnWidth * (this.canvasColumns - 1) &&
-      mostLeftColumnWithEnemyAlive.x < this.canvasColumnWidth * this.canvasColumns;
+      mostLeftColumnWithEnemyAlive.x < this.canvasColumnWidth * this.canvasColumns;*/
   }
   /**
    * Move all enemies in the "space invaders" pattern
    */
   moveSpaceInvadersEnemies() {
+    console.log('moveSpaceInvadersEnemies')
     /*
     Van de izquierda a derecha
     mientras que la esquina derecha del enemigo de la derecha no colisione con el límite de la derecha
@@ -124,37 +132,111 @@ export class ControllerEnemiesMovement {
     REPITE hasta que un enemigo de la fila inferior colisione con player
     */
 
-    this.spaceInvadersEnemiesShootsTimerId = setInterval(() => {
-      /*
-      Elegimos una columna aleatoria
-      El último enemigo de esa columna 
-      Dispara
+    //this.siEnemiesShootsTimerId = setInterval(() => {
+    /*
+    Elegimos una columna aleatoria
+    El último enemigo de esa columna 
+    Dispara
 
-      0 1 2 3
-      ceil(rand*4) => [1, 4] -1 => [0, 3]
-       */
-      let shootColumn = Math.ceil(Math.random() * game.model.siEnemiesPerRow) - 1;
-      let lastEnemy;
-      for (let i = 0; i < game.model.siEnemies.length; i++) {
-        let enemy = game.model.siEnemies[i][shootColumn];
-        if (enemy && enemy.elem.style.display !== "none") {
-          lastEnemy = enemy;
-        } else {
-          continue;
-        }
-      }
-
-      if (lastEnemy)
-        lastEnemy.shoot();
-    }, 1500);
-
+    0 1 2 3
+    ceil(rand*4) => [1, 4] -1 => [0, 3]
+     */
+    /*let shootColumn = Math.ceil(Math.random() * game.model.siEnemiesPerRow) - 1;
+    let lastEnemy;
     for (let i = 0; i < game.model.siEnemies.length; i++) {
+      let enemy = game.model.siEnemies[i][shootColumn];
+      if (enemy && enemy.elem.style.display !== "none") {
+        lastEnemy = enemy;
+      } else {
+        continue;
+      }
+    }
+
+    if (lastEnemy)
+      lastEnemy.shoot();
+  }, 1500);*/
+
+    /*for (let i = 0; i < game.model.siEnemies.length; i++) {
       for (let j = 0; j < game.model.siEnemies[i].length; j++) {
         let enemy = game.model.siEnemies[i][j];
         enemy.collisionable = true;
         enemy.elem.style.display = "inline";
         enemy.moveEnemyLeftToRight();
       }
+    }*/
+
+    console.warn(this.grid._grid)
+    if(!this.grid.someEnemyIsAlive()) {
+      this.siEnemiesMovementDown = false;
+      this.siEnemiesMovementDirection = true;
+      return;
+    }
+
+    const updateDirectionIfNeeded = () => {
+      console.warn("most right ", this.grid.getMostRightEnemy().column)
+      console.warn("most left ", this.grid.getMostLeftEnemy().column)
+      if(this.siEnemiesMovementDown) {
+        console.warn("ABAJO LISTO")
+        this.siEnemiesMovementDown = false;
+        this.siEnemiesMovementDirection = !this.siEnemiesMovementDirection;
+      } else {
+        if((this.siEnemiesMovementDirection && this.grid.getMostRightEnemy().column === this.grid.canvasColumns - 1) || 
+          (!this.siEnemiesMovementDirection && this.grid.getMostLeftEnemy().column === 0)) {
+          console.warn("ABAJO")
+          this.siEnemiesMovementDown = true;
+        }
+      }
+    };
+    const moveAllInArray = (x, idx, arr) => {
+      let destination = this.siEnemiesMovementDown ? [x.row + 1, x.column] :
+        this.siEnemiesMovementDirection ? [x.row, x.column + 1] : [x.row, x.column - 1];
+      if(idx === arr.length - 1) {
+        this.grid.moveEnemyTo([x.row, x.column], destination, () => { this.siEnemiesMovementTimerId = setTimeout(() => { this.moveSpaceInvadersEnemies(); }, 1000); });
+        updateDirectionIfNeeded(x);
+      } else {
+        this.grid.moveEnemyTo([x.row, x.column], destination);
+      }
+    }
+    const moveAllEnemiesOneCellToTheRight = () => {
+      let enemies = [];
+      for (let column = this.grid.canvasColumns - 1; column >= 0; column--) {
+        for (let row = 0; row < this.grid.canvasRows; row++) {
+          let enemy = this.grid.getCell(row, column);
+          if(enemy)
+            enemies.push(enemy);
+        }
+      }
+      enemies.forEach(moveAllInArray);
+    };
+    const moveAllEnemiesOneCellToTheLeft = () => {
+      let enemies = [];
+      for (let column = 0; column < this.grid.canvasColumns; column++) {
+        for (let row = 0; row < this.grid.canvasRows; row++) {
+          let enemy = this.grid.getCell(row, column);
+          if(enemy)
+            enemies.push(enemy);
+        }
+      }
+      enemies.forEach(moveAllInArray);
+    };
+    const moveAllEnemiesOneCellDown = () => {
+      let enemies = [];
+      for (let row = this.grid.canvasRows - 1; row >= 0; row--) {
+        for (let column = this.grid.canvasColumns - 1; column >= 0; column--) {
+          let enemy = this.grid.getCell(row, column);
+          if(enemy)
+            enemies.push(enemy);
+        }
+      }
+      enemies.forEach(moveAllInArray);
+    };
+
+    if(this.siEnemiesMovementDown) {
+      moveAllEnemiesOneCellDown();
+    } else if (this.siEnemiesMovementDirection) {
+      moveAllEnemiesOneCellToTheRight();
+    } else {
+      moveAllEnemiesOneCellToTheLeft();
     }
   }
   /**
@@ -177,13 +259,15 @@ export class ControllerEnemiesMovement {
     }
 
     if (game.gameState === "spaceInvaders") {
+      clearTimeout(this.siEnemiesMovementTimerId);
+      clearInterval(this.siEnemiesShootsTimerId);
       for (let i = 0; i < game.model.siEnemies.length; i++) {
         for (let j = 0; j < game.model.siEnemies[i].length; j++) {
           cancelAnimationFrame(game.model.siEnemies[i][j].moveAnimationId);
           clearTimeout(game.model.siEnemies[i][j].moveAnimationId);
         }
       }
-      clearInterval(this.spaceInvadersEnemiesShootsTimerId);
+      clearInterval(this.siEnemiesShootsTimerId);
     } else {
       clearTimeout(this.svEnemiesMoveTimerId);
       this.svEnemiesMoveTimerId = null;
@@ -217,7 +301,8 @@ export class ControllerEnemiesMovement {
           [final[0], final[1]],
           1,
           this.svEnemiesPaths[index][2][0],
-          this.svEnemiesPaths[index][2][1])
+          this.svEnemiesPaths[index][2][1],
+          () => { game.model.enemiesPool.storeObject(this); })
       },
         1000 + (500 * i)
       );

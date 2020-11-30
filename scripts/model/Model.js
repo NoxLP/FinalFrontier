@@ -41,12 +41,12 @@ export class Model {
       game.points += (enemy.type + 1) * 100;
 
     if (game.gameState === "spaceInvaders") {
-      //Remove enemy image from DOM and object from array. No more references are ever created, so garbage collector should remove it rom memory
-      enemy.elem.style.display = "none";
-      enemy.collisionable = false;
-
+      this.grid.removeEnemy(enemy);
+      
       cancelAnimationFrame(enemy.moveAnimationId);
       clearTimeout(enemy.moveAnimationId);
+      
+      this.enemiesPool.storeObject(enemy);
       this.createExplosion(enemy);
 
       if (this.siEnemies.every(x => x.every(e => e.elem.style.display === "none"))) {
@@ -85,39 +85,6 @@ export class Model {
     this.createExplosion(this.bonus);
     this.bonus.resetPosition();
     setTimeout(() => { this.bonus.move(); }, game.enemiesMovementController.bonusTimeout);
-  }
-  /**
-   * Create all "space invaders" part's enemies in their initial position
-   */
-  createEnemies() {
-    /*
-    tipo 1 => row 1, 2
-    tipo 2 => row 3, 4
-    
-    tipo 1 => (tipo * 2) - 1, tipo * 2 => 2 - 1, 2 => 1, 2
-    tipo 2 => (tipo * 2) - 1, tipo * 2 => 4 - 1, 4 => 3, 4
-    
-    row_1 = (tipo * 2) - 1
-    row_2 = tipo * 2
-    
-    type = roundUp(row / 2)
-    */
-    /*
-    enemies = []
-    i = 0 => enemies = [[]]
-    j = 0 => 
-    j = 1 =>
-    ...
-    i = 1 => enemies = [[], []]
-    i = 2 => enemies = [[], [], []]
-    */
-    for (let i = 0; i < 5; i++) {
-      this.siEnemies.push([]);
-      for (let j = 0; j < this.siEnemiesPerRow; j++) {
-        let coords = game.calculateCoordinatesByPosition(i, j);
-        this.siEnemies[i].push(new Enemy(Math.ceil(i / 2), coords[0], coords[1], i, j));
-      }
-    }
   }
   /**
    * Create explosion when enemy gets destroyed
