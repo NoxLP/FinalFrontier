@@ -19,6 +19,16 @@ export class ControllerPlayerInput {
   constructor() {
     this.keysHorizontal = [0];
     this.keysVertical = [0];
+    this._responsive = false;
+  }
+  get responsive() {return this._responsive; }
+  set responsive(value) {
+    this._responsive = value;
+    if(!this._responsive) {
+      this.keysHorizontal = [0];
+      this.keysVertical = [0];
+      this.setPlayerDirection();
+    }
   }
   setPlayerDirection(){
     player.playerDirection = [
@@ -27,23 +37,25 @@ export class ControllerPlayerInput {
     ];
   }
   keyDown(key) {
-    if (!player.responsive)
+    if (!this.responsive)
       return;
 
     switch (key) {
       case "ArrowLeft"://player.playerDirection[0] = -1;
-        this.keysHorizontal.push(-1);
+        if(!this.keysHorizontal.includes(-1))
+          this.keysHorizontal.push(-1);
         break;
       case "ArrowRight"://player.playerDirection[0] = 1;
-        this.keysHorizontal.push(1);
+        if(!this.keysHorizontal.includes(1))
+          this.keysHorizontal.push(1);
         break;
       case "ArrowUp"://player.playerDirection[1] = -1;
-        if (game.gameState !== "spaceInvaders") {
+        if (game.gameState !== "spaceInvaders" && !this.keysVertical.includes(-1)) {
           this.keysVertical.push(-1);
         }
         break;
       case "ArrowDown"://player.playerDirection[1] = 1;
-        if (game.gameState !== "spaceInvaders") {
+        if (game.gameState !== "spaceInvaders" && !this.keysVertical.includes(1)) {
           this.keysVertical.push(1);
         }
         break;
@@ -62,7 +74,7 @@ export class ControllerPlayerInput {
       player.move();
   }
   keyUp(key) {
-    if (!player.responsive)
+    if (!this.responsive)
       return;
 
     let index;

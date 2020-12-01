@@ -139,7 +139,7 @@ export class Game {
           this.enemiesMovementController.scrollVerticalEnemiesMovements();
         }
 
-        player.responsive = true;
+        this.playerInputController.responsive = true;
         player.collisionable = true;
         player.elem.style.display = "inline";
       }, 5000);
@@ -163,7 +163,7 @@ export class Game {
     Empiezan a aparecer enemigos de scroll vertical
     */
     this.gameState = "SV";
-    player.responsive = false;
+    this.playerInputController.responsive = false;
     this.stopAllPlayerMovements();
     this.showMessage("Stage 1 cleared. All engines ON");
 
@@ -181,7 +181,7 @@ export class Game {
     this.model.siEnemies = [];
 
     setTimeout(() => {
-      player.responsive = true;
+      this.playerInputController.responsive = true;
       this.backgroundController.moveBackgroundDown();
       this.enemiesMovementController.scrollVerticalEnemiesMovements();
     }, 3000);
@@ -254,7 +254,7 @@ export class Game {
     */
     this.enemiesMovementController.cancelAllEnemiesMovement();
     this.stopAllPlayerMovements();
-    player.responsive = false;
+    this.playerInputController.responsive = false;
 
     setTimeout(() => {
       this.showMessage(`You Won Crack. Your points are: ${this.pointsCounter.showedPoints}`);
@@ -272,7 +272,7 @@ export class Game {
   start() {
     this.backgroundController.stopBackground();
     this.gameState = "spaceInvaders";
-    player.responsive = true;
+    this.playerInputController.responsive = true;
     player.collisionable = true;
     this.audio.changeMusicByGameState();
 

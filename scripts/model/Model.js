@@ -59,7 +59,7 @@ export class Model {
    */
   removePlayer() {
     player.elem.style.display = "none";
-    player.responsive = false;
+    game.playerInputController.responsive = false;
     player.collisionable = false;
     game.stopAllPlayerMovements();
   }
