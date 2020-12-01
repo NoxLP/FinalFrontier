@@ -21,7 +21,7 @@ export class EnemyBullet extends CollisionableObject {
     elem.classList.add("bullet");
     super(elem, x, y, game.bulletSize[0], game.bulletSize[1]);
 
-    this.id = lastId++;
+    this.id = ++lastId;
   }
   /**
    * Get the angle in degrees based on a direction vector normalized to (-1,1).

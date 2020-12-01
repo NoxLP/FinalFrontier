@@ -247,7 +247,12 @@ export class ControllerEnemiesMovement {
     let numberOfEnemies = Math.round((Math.random() * 3) + 2);
 
     for (let i = 0; i < numberOfEnemies; i++) {
-      let enemy = game.model.enemiesPool.getNewObject(() => new Enemy(shiptype, initial[0], initial[1]), initial[0], initial[1]);
+      let enemy = game.model.enemiesPool.getNewObject({
+        type: shiptype,
+        x: initial[0],
+        y: initial[1],
+        collisionable: true
+      });
       enemy.type = shiptype;
       enemy.elem.classList.add("enemy");
 
@@ -257,7 +262,9 @@ export class ControllerEnemiesMovement {
           1,
           this.svEnemiesPaths[index][2][0],
           this.svEnemiesPaths[index][2][1],
-          () => { game.model.enemiesPool.storeObject(enemy); })
+          () => { 
+            console.log(enemy)
+            game.model.enemiesPool.storeObject(enemy); })
       },
         1000 + (500 * i)
       );

@@ -71,7 +71,11 @@ export class Player extends CollisionableObject {
   shoot() {
     if (this.shooting) {
       let x = this.centerX - (game.bulletSize[0] / 2), y = this.y - (game.bulletSize[1] * 0.5);
-      let bullet = game.model.playerBulletsPool.getNewObject(() => new PlayerBullet(x, y), x, y);
+      let bullet = game.model.playerBulletsPool.getNewObject({
+        x: x,
+        y: y
+      });
+        //() => new PlayerBullet(x, y), x, y);
       /*
       Para mover la bala hacia arriba:
       1.- window.requestAnimationFrame(bullet.move)

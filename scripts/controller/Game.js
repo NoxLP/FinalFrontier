@@ -204,11 +204,11 @@ export class Game {
     player.teleportToInitialPosition();
 
     //All enemies to initial position
-    for (let i = 0; i < this.model.siEnemies.length; i++) {
+    /*for (let i = 0; i < this.model.siEnemies.length; i++) {
       for (let j = 0; j < this.model.siEnemies[i].length; j++) {
         this.model.siEnemies[i][j].teleportToInitialPosition();
       }
-    }
+    }*/
 
     if (this.model.bonus) {
       this.model.bonus.cancelAnimation();

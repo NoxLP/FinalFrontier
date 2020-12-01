@@ -135,8 +135,11 @@ export class Boss extends CollisionableObject {
       this._currentPattern = 0;
 
     this._shootPatterns[this._currentPattern].forEach(direction => {
-      bullet = game.model.enemiesBulletsPool.getNewObject(() => new EnemyBullet(
-        this.centerX, this.centerY, this.x, this.y + this.height - game.bulletSize[1]));
+      bullet = game.model.enemiesBulletsPool.getNewObject({
+        x: this.centerX,
+        y: this.centerY
+      });
+        //() => new EnemyBullet(this.centerX, this.centerY, this.x, this.y + this.height - game.bulletSize[1]));
       bullet.move(direction);
     });
 

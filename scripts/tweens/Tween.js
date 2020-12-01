@@ -177,7 +177,7 @@ export class Tween {
       this._frameRequestId = window.requestAnimationFrame(() => { this._tick(); });
     } else if (!this._tweenRunning) {
       this.reset();
-      if (this._finalCallback && !this.stopWithoutCallback) {
+      if (this._enemy && this._finalCallback && !this.stopWithoutCallback) {
         this._finalCallback();
       }
     }

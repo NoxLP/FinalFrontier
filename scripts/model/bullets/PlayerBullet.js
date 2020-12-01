@@ -1,6 +1,7 @@
 import { CollisionableObject } from "../base/CollisionableObject.js";
 import { game } from "../../main.js";
 
+var lastId = -1;
 /**
  * Class for player bullets
  */
@@ -11,6 +12,7 @@ export class PlayerBullet extends CollisionableObject {
     elem.classList.add("bullet");
     super(elem, x, y, game.bulletSize[0], game.bulletSize[1]);
 
+    this.id = ++lastId;
     this.audio = game.audio.playAudio("assets/music/sounds/playerLaser.mp3");
   }
   /**

@@ -101,8 +101,15 @@ export class Grid {
       for (let j = 0; j < this._model.siEnemiesPerRow; j++) {
         let type = Math.ceil(i / 2);
         let coords = this.calculateCoordinatesByPosition(type, i + 1, j);
-        this._grid[i + 1][j] = this._model.enemiesPool.getNewObject(() => new Enemy(type, coords[0], coords[1], i + 1, j));
-        console.log(`CREADO en ${i + 1}, ${j}: `, JSON.stringify(this._grid[i + 1][j]), null, 2)
+        this._grid[i + 1][j] = this._model.enemiesPool.getNewObject({
+          x: coords[0],
+          y: coords[1],
+          type: type,
+          row: i + 1,
+          column: j,
+          collisionable: true
+        });
+        console.log(`CREADO en ${i + 1}, ${j}: `, this._grid[i + 1][j])
       }
     }
   }
@@ -139,7 +146,7 @@ export class Grid {
     return null;
   }
   moveEnemyTo(originCell, destinationCell, finalCallback) {
-    //console.log("_moveEnemyTo ", originCell, destinationCell);
+    console.log("_moveEnemyTo ", originCell, destinationCell);
 
     let enemy = this._grid[originCell[0]][originCell[1]];
 

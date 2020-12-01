@@ -1,8 +1,10 @@
 import { game, player } from "../main.js";
 import { Enemy } from "../model/Enemy.js";
 import { BonusEnemy } from "../model/BonusEnemy.js";
-import { ObjectPool } from "../model/ObjectPool.js";
+import { ObjectPool } from "./pools/ObjectPool.js";
 import { Grid } from "./Grid.js";
+import { EnemyBullet } from "./bullets/EnemyBullet.js";
+import { PlayerBullet } from "./bullets/PlayerBullet.js";
 
 export class Model {
   constructor(enemiesPerRow, canvasWidth, canvasHeight) {
@@ -28,9 +30,9 @@ export class Model {
       (this.grid.canvasRowHeight * (this.grid.canvasRows - 1)) + (this.grid.canvasRowHeight / 2) - (this.playerSize[1] / 2)
     ];
 
-    this.enemiesPool = new ObjectPool();
-    this.enemiesBulletsPool = new ObjectPool();
-    this.playerBulletsPool = new ObjectPool();
+    this.enemiesPool = new ObjectPool(() => new Enemy(0, 0, 0, 0, 0));
+    this.enemiesBulletsPool = new ObjectPool(() => new EnemyBullet(0, 0));
+    this.playerBulletsPool = new ObjectPool(() => new PlayerBullet(0,0));
   }
   /**
    * Remove enemy
