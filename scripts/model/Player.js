@@ -15,7 +15,6 @@ export class Player extends CollisionableObject {
     this.lastBulletTime = null;
     this.shootTimer;
     this._lives = 3;
-    this.responsive = true;
     this.playerDirection = [0, 0];
     this.movementAnimationId;
     this.shooting = false;
@@ -92,6 +91,5 @@ export class Player extends CollisionableObject {
     this.x = game.model.playerInitialCoords[0];
     this.y = game.model.playerInitialCoords[1];
     this.elem.style.display = "inline";
-    this.responsive = true;
   }
 }
