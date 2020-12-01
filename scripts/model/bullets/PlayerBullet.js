@@ -17,19 +17,14 @@ export class PlayerBullet extends CollisionableObject {
    * Iterates all "space invaders" part enemies to see if collides with one of them
    */
   isCollidingWithAnEnemy() {
-    //This could be more efficient storing enemies by their coords in some sort of grid, so one should only check for collisions in the same column of the bullet
-    /*//No time for doing the above
-    for (let i = 0; i < game.model.siEnemies.length; i++) {
-      for (let j = 0; j < game.model.siEnemies[i].length; j++) {
-        if (this.collideWith(game.model.siEnemies[i][j])) {
-          return game.model.siEnemies[i][j];
-        }
+    /*
+    Check for collisions only in the cell the bullet is right now and adjacents
+    */
+    let cells = game.model.grid.getCellAndAdjacentsByCoordinates(this.x, this.y);
+    for(let enemy of cells) {
+      if (enemy && this.collideWith(enemy)) {
+        return enemy;
       }
-    }
-    return null;*/
-    let enemy = game.model.grid.getCellByCoordinates(this.x, this.y);
-    if(enemy && this.collideWith(enemy)) {
-      return enemy;
     }
     return null;
   }

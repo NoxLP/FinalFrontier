@@ -40,21 +40,22 @@ export class Model {
     if (givePoints)
       game.points += (enemy.type + 1) * 100;
 
+    console.log("Enemy destroyed ", enemy)
+
+    if(enemy.myMovementTween)
+      enemy.myMovementTween.stop();
+    this.createExplosion(enemy);
+    this.enemiesPool.storeObject(enemy);
+
     if (game.gameState === "spaceInvaders") {
       this.grid.removeEnemy(enemy);
       
       cancelAnimationFrame(enemy.moveAnimationId);
       clearTimeout(enemy.moveAnimationId);
-      
-      this.enemiesPool.storeObject(enemy);
-      this.createExplosion(enemy);
 
-      if (this.siEnemies.every(x => x.every(e => e.elem.style.display === "none"))) {
+      if (!this.grid.someEnemyIsAlive()) {
         game.startScrollVertical();
       }
-    } else {
-      this.createExplosion(enemy);
-      this.enemiesPool.storeObject(enemy);
     }
   }
   /**

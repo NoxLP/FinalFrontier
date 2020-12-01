@@ -120,24 +120,24 @@ export class ControllerEnemiesMovement {
       }
     }*/
 
-    console.warn(this.grid._grid)
-    if(!this.grid.someEnemyIsAlive()) {
+    //console.warn(this.grid._grid)
+    if (!this.grid.someEnemyIsAlive()) {
       this.siEnemiesMovementDown = false;
       this.siEnemiesMovementDirection = true;
       return;
     }
 
     const updateDirectionIfNeeded = () => {
-      console.warn("most right ", this.grid.getMostRightEnemy().column)
-      console.warn("most left ", this.grid.getMostLeftEnemy().column)
-      if(this.siEnemiesMovementDown) {
-        console.warn("ABAJO LISTO")
+      //console.warn("most right ", this.grid.getMostRightEnemy().column)
+      //console.warn("most left ", this.grid.getMostLeftEnemy().column)
+      if (this.siEnemiesMovementDown) {
+        //console.warn("ABAJO LISTO")
         this.siEnemiesMovementDown = false;
         this.siEnemiesMovementDirection = !this.siEnemiesMovementDirection;
       } else {
-        if((this.siEnemiesMovementDirection && this.grid.getMostRightEnemy().column === this.grid.canvasColumns - 1) || 
+        if ((this.siEnemiesMovementDirection && this.grid.getMostRightEnemy().column === this.grid.canvasColumns - 1) ||
           (!this.siEnemiesMovementDirection && this.grid.getMostLeftEnemy().column === 0)) {
-          console.warn("ABAJO")
+          //console.warn("ABAJO")
           this.siEnemiesMovementDown = true;
         }
       }
@@ -145,7 +145,7 @@ export class ControllerEnemiesMovement {
     const moveAllInArray = (x, idx, arr) => {
       let destination = this.siEnemiesMovementDown ? [x.row + 1, x.column] :
         this.siEnemiesMovementDirection ? [x.row, x.column + 1] : [x.row, x.column - 1];
-      if(idx === arr.length - 1) {
+      if (idx === arr.length - 1) {
         this.grid.moveEnemyTo([x.row, x.column], destination, () => { this.siEnemiesMovementTimerId = setTimeout(() => { this.moveSpaceInvadersEnemies(); }, 500); });
         updateDirectionIfNeeded(x);
       } else {
@@ -157,7 +157,7 @@ export class ControllerEnemiesMovement {
       for (let column = this.grid.canvasColumns - 1; column >= 0; column--) {
         for (let row = 0; row < this.grid.canvasRows; row++) {
           let enemy = this.grid.getCell(row, column);
-          if(enemy)
+          if (enemy)
             enemies.push(enemy);
         }
       }
@@ -168,7 +168,7 @@ export class ControllerEnemiesMovement {
       for (let column = 0; column < this.grid.canvasColumns; column++) {
         for (let row = 0; row < this.grid.canvasRows; row++) {
           let enemy = this.grid.getCell(row, column);
-          if(enemy)
+          if (enemy)
             enemies.push(enemy);
         }
       }
@@ -179,14 +179,14 @@ export class ControllerEnemiesMovement {
       for (let row = this.grid.canvasRows - 1; row >= 0; row--) {
         for (let column = this.grid.canvasColumns - 1; column >= 0; column--) {
           let enemy = this.grid.getCell(row, column);
-          if(enemy)
+          if (enemy)
             enemies.push(enemy);
         }
       }
       enemies.forEach(moveAllInArray);
     };
 
-    if(this.siEnemiesMovementDown) {
+    if (this.siEnemiesMovementDown) {
       moveAllEnemiesOneCellDown();
     } else if (this.siEnemiesMovementDirection) {
       moveAllEnemiesOneCellToTheRight();
@@ -257,7 +257,7 @@ export class ControllerEnemiesMovement {
           1,
           this.svEnemiesPaths[index][2][0],
           this.svEnemiesPaths[index][2][1],
-          () => { game.model.enemiesPool.storeObject(this); })
+          () => { game.model.enemiesPool.storeObject(enemy); })
       },
         1000 + (500 * i)
       );

@@ -20,11 +20,26 @@ export class Grid {
     this._model = model;
     this._grid = [...Array(this.canvasRows)].map(x => [...Array(this.canvasColumns)]);
   }
+  cellIsValid(row, column) {
+    return row > 0 && row < this.canvasRows && column > 0 && column < this.canvasColumns;
+  }
   getCell(row, column) { return this._grid[row][column]; }
   getCellByCoordinates(x, y) {
     let row = Math.floor(y / this.canvasRowHeight);
     let col = Math.floor(x / this.canvasColumnWidth);
-    return this._grid[row][col];
+    console.log('getCellByCoordinates ', x, y, ' RC ', row, col)
+    return this.cellIsValid(row, col) ? this._grid[row][col] : null;
+  }
+  getCellAndAdjacentsByCoordinates(x, y) {
+    let row = Math.floor(y / this.canvasRowHeight);
+    let col = Math.floor(x / this.canvasColumnWidth);
+    return [
+      this.cellIsValid(row, col) ? this.getCell(row, col) : null,
+      this.cellIsValid(row, col) ? this.getCell(row - 1, col) : null,
+      this.cellIsValid(row, col) ? this.getCell(row, col + 1) : null,
+      this.cellIsValid(row, col) ? this.getCell(row + 1, col) : null,
+      this.cellIsValid(row, col) ? this.getCell(row, col - 1) : null
+    ]
   }
   /**
    * Get center x coordinate of column
@@ -90,7 +105,6 @@ export class Grid {
         console.log(`CREADO en ${i + 1}, ${j}: `, JSON.stringify(this._grid[i + 1][j]), null, 2)
       }
     }
-    console.log("ENEMIGOS CREADOS ", JSON.stringify(this._grid, null, 2));
   }
   removeEnemy(enemy) {
     this._grid[enemy.row][enemy.column] = null;
@@ -129,8 +143,8 @@ export class Grid {
 
     let enemy = this._grid[originCell[0]][originCell[1]];
 
-    if(destinationCell[0] > this.canvasRows - 1) {
-      if(finalCallback) {
+    if (destinationCell[0] > this.canvasRows - 1) {
+      if (finalCallback) {
         finalCallback = () => {
           this._model.enemiesPool.storeObject(enemy);
           finalCallback();
@@ -144,7 +158,7 @@ export class Grid {
       enemy.column = destinationCell[1];
     }
     this._grid[originCell[0]][originCell[1]] = null;
-    
+
     enemy.moveToPoint(
       this.calculateCoordinatesByPosition(enemy.type, destinationCell[0], destinationCell[1]),
       0.2,

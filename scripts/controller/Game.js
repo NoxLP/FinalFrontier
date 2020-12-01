@@ -155,7 +155,7 @@ export class Game {
     this.stopAllPlayerMovements();
     this.showMessage("Stage 1 cleared. All engines ON");
 
-    for (let i = 0; i < this.model.siEnemies.length; i++) {
+    /*for (let i = 0; i < this.model.siEnemies.length; i++) {
       for (let j = 0; j < this.model.siEnemies[i].length; j++) {
         let enemy = this.model.siEnemies[i][j];
         if (enemy.moveAnimationId) {
@@ -166,7 +166,7 @@ export class Game {
         this.canvas.removeChild(enemy.elem);
       }
     }
-    this.model.siEnemies = [];
+    this.model.siEnemies = [];*/
 
     setTimeout(() => {
       player.responsive = true;
