@@ -41,6 +41,16 @@ export class Grid {
       this.cellIsValid(row, col) ? this.getCell(row, col - 1) : null
     ]
   }
+  doToEveryEnemies(callback) {
+    this._grid.forEach(row => {
+      row.forEach(enemy => { 
+        if(enemy) callback(enemy); 
+      });
+    });
+  }
+  someEnemy(predicate) {
+    return this._grid.some(x => x.some(enemy => enemy && predicate(enemy)));
+  }
   /**
    * Get center x coordinate of column
    * @param {number} column Column index
@@ -116,9 +126,6 @@ export class Grid {
   removeEnemy(enemy) {
     this._grid[enemy.row][enemy.column] = null;
   }
-  someEnemyIsAlive() {
-    return this._grid.some(x => x.some(x => x));
-  }
   getMostTopEnemy() {
     for (let row = 0; row < this.canvasRows; row++) {
       let index = this._grid[row].findIndex(x => x);
@@ -146,7 +153,7 @@ export class Grid {
     return null;
   }
   moveEnemyTo(originCell, destinationCell, finalCallback) {
-    console.log("_moveEnemyTo ", originCell, destinationCell);
+    //console.log("_moveEnemyTo ", originCell, destinationCell);
 
     let enemy = this._grid[originCell[0]][originCell[1]];
 

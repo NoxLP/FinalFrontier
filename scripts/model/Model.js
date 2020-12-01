@@ -55,7 +55,7 @@ export class Model {
       cancelAnimationFrame(enemy.moveAnimationId);
       clearTimeout(enemy.moveAnimationId);
 
-      if (!this.grid.someEnemyIsAlive()) {
+      if (!this.grid.someEnemy(x => x)) {
         game.startScrollVertical();
       }
     }

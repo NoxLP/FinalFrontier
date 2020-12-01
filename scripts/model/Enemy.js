@@ -86,6 +86,9 @@ export class Enemy extends CollisionableObject {
       if (this.myMovementTween.paused) {
         this.myMovementTween.stopWithoutCallback = true;
         this.myMovementTween.stop();
+        return false;
+      } else {
+        this.myMovementTween.stopWithoutCallback = false;
       }
     }
 

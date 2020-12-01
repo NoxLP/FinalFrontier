@@ -74,6 +74,9 @@ export class ControllerEnemiesMovement {
   moveSpaceInvadersEnemies() {
     console.log('moveSpaceInvadersEnemies')
     /*
+    Si la tween de los enemigos está en pausa (el jugador murió y están esperando a que reaparezca)
+      play a todas las tween
+      return
     Van de izquierda a derecha
     mientras que la esquina derecha del enemigo de la derecha no colisione con el límite de la derecha
       sumas a x
@@ -121,9 +124,14 @@ export class ControllerEnemiesMovement {
     }*/
 
     //console.warn(this.grid._grid)
-    if (!this.grid.someEnemyIsAlive()) {
+    if (!this.grid.someEnemy(x => x)) {
       this.siEnemiesMovementDown = false;
       this.siEnemiesMovementDirection = true;
+      return;
+    }
+
+    if (this.grid.someEnemy(x => x.myMovementTween && x.myMovementTween.paused)) {
+      this.grid.doToEveryEnemies(enemy => { if (x.myMovementTween) x.myMovementTween.play(); })
       return;
     }
 
@@ -216,13 +224,16 @@ export class ControllerEnemiesMovement {
     if (game.gameState === "spaceInvaders") {
       clearTimeout(this.siEnemiesMovementTimerId);
       clearInterval(this.siEnemiesShootsTimerId);
-      for (let i = 0; i < game.model.siEnemies.length; i++) {
+      /*for (let i = 0; i < game.model.siEnemies.length; i++) {
         for (let j = 0; j < game.model.siEnemies[i].length; j++) {
           cancelAnimationFrame(game.model.siEnemies[i][j].moveAnimationId);
           clearTimeout(game.model.siEnemies[i][j].moveAnimationId);
         }
-      }
-      clearInterval(this.siEnemiesShootsTimerId);
+      }*/
+      this.grid.doToEveryEnemies(enemy => {
+        enemy.myMovementTween.stopWithoutCallback = true;
+        enemy.myMovementTween.pause();
+      });
     } else {
       clearTimeout(this.svEnemiesMoveTimerId);
       this.svEnemiesMoveTimerId = null;
@@ -262,9 +273,10 @@ export class ControllerEnemiesMovement {
           1,
           this.svEnemiesPaths[index][2][0],
           this.svEnemiesPaths[index][2][1],
-          () => { 
+          () => {
             console.log(enemy)
-            game.model.enemiesPool.storeObject(enemy); })
+            game.model.enemiesPool.storeObject(enemy);
+          })
       },
         1000 + (500 * i)
       );

@@ -113,23 +113,25 @@ export class Game {
     player.loseLive();
 
     if (player.lives > 0) {
+      this.enemiesMovementController.cancelAllEnemiesMovement();
       setTimeout(() => { this.showMessage("You lost a life"); }, 500);
 
-      this.model.enemiesPool.storeAllObjects();
+      setTimeout(() => { player.elem.style.display = "inline"; }, 4000);
+
       setTimeout(() => {
+        this.playerInputController.responsive = true;
+        player.collisionable = true;
+        
         if (this.model.finalBoss && this.model.finalBoss.elem.display !== "none") {
           this.enemiesMovementController.bossMovements(0);
         } else if (this.gameState === "spaceInvaders") {
-          this.siReset();
+          //this.siReset();
           this.enemiesMovementController.moveSpaceInvadersEnemies();
           this.enemiesMovementController.moveBonusEnemy();
         } else {
           this.enemiesMovementController.scrollVerticalEnemiesMovements();
+          this.model.enemiesPool.storeAllObjects();
         }
-
-        this.playerInputController.responsive = true;
-        player.collisionable = true;
-        player.elem.style.display = "inline";
       }, 5000);
     } else {
       setTimeout(() => { this.gameOver(); }, 1000);

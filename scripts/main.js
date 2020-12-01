@@ -5,7 +5,7 @@ import { Player } from "./model/Player.js";
 /**
  * Object that controls all general aspects of the game
  */
-export const game = new Game(1);
+export const game = new Game(8);
 /**
  * Object to handle and interact tieh game's menu
  */
