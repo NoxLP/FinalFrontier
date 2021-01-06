@@ -1,12 +1,11 @@
 import { game } from "../main.js";
 import { easings } from "../tweens/easings.js";
 import { Enemy } from "../model/Enemy.js";
+import { ControllerEnemMoveSpaceInvaders } from "./ControllerEnemMoveSpaceInvaders.js";
 
 export class ControllerEnemiesMovement {
   constructor(width, height) {
     this.siEnemyFrameStep = 4;
-    this.siEnemiesMovementDirection = true;
-    this.siEnemiesMovementDown = false;
     this.siEnemiesMovementTimeout = 500;
     this.siEnemiesMovementTimerId;
     this.siEnemiesShootsTimerId;
@@ -67,6 +66,7 @@ export class ControllerEnemiesMovement {
     this.bossAnimationTimerId;
 
     this.grid;
+    this._spaceInvadersMovementController = new ControllerEnemMoveSpaceInvaders(this)
   }
   /**
    * Move all enemies in the "space invaders" pattern
@@ -90,43 +90,10 @@ export class ControllerEnemiesMovement {
     REPITE hasta que un enemigo de la fila inferior colisione con player
     */
 
-    //this.siEnemiesShootsTimerId = setInterval(() => {
-    /*
-    Elegimos una columna aleatoria
-    El último enemigo de esa columna 
-    Dispara
-
-    0 1 2 3
-    ceil(rand*4) => [1, 4] -1 => [0, 3]
-     */
-    /*let shootColumn = Math.ceil(Math.random() * game.model.siEnemiesPerRow) - 1;
-    let lastEnemy;
-    for (let i = 0; i < game.model.siEnemies.length; i++) {
-      let enemy = game.model.siEnemies[i][shootColumn];
-      if (enemy && enemy.elem.style.display !== "none") {
-        lastEnemy = enemy;
-      } else {
-        continue;
-      }
-    }
-
-    if (lastEnemy)
-      lastEnemy.shoot();
-  }, 1500);*/
-
-    /*for (let i = 0; i < game.model.siEnemies.length; i++) {
-      for (let j = 0; j < game.model.siEnemies[i].length; j++) {
-        let enemy = game.model.siEnemies[i][j];
-        enemy.collisionable = true;
-        enemy.elem.style.display = "inline";
-        enemy.moveEnemyLeftToRight();
-      }
-    }*/
-
     //console.warn(this.grid._grid)
     if (!this.grid.someEnemy(x => x)) {
-      this.siEnemiesMovementDown = false;
-      this.siEnemiesMovementDirection = true;
+      this._spaceInvadersMovementController.siEnemiesMovementDown = false;
+      this._spaceInvadersMovementController.siEnemiesMovementDirection = true;
       return;
     }
 
@@ -135,71 +102,12 @@ export class ControllerEnemiesMovement {
       return;
     }
 
-    const updateDirectionIfNeeded = () => {
-      //console.warn("most right ", this.grid.getMostRightEnemy().column)
-      //console.warn("most left ", this.grid.getMostLeftEnemy().column)
-      if (this.siEnemiesMovementDown) {
-        //console.warn("ABAJO LISTO")
-        this.siEnemiesMovementDown = false;
-        this.siEnemiesMovementDirection = !this.siEnemiesMovementDirection;
-      } else {
-        if ((this.siEnemiesMovementDirection && this.grid.getMostRightEnemy().column === this.grid.canvasColumns - 1) ||
-          (!this.siEnemiesMovementDirection && this.grid.getMostLeftEnemy().column === 0)) {
-          //console.warn("ABAJO")
-          this.siEnemiesMovementDown = true;
-        }
-      }
-    };
-    const moveAllInArray = (x, idx, arr) => {
-      let destination = this.siEnemiesMovementDown ? [x.row + 1, x.column] :
-        this.siEnemiesMovementDirection ? [x.row, x.column + 1] : [x.row, x.column - 1];
-      if (idx === arr.length - 1) {
-        this.grid.moveEnemyTo([x.row, x.column], destination, () => { this.siEnemiesMovementTimerId = setTimeout(() => { this.moveSpaceInvadersEnemies(); }, 500); });
-        updateDirectionIfNeeded(x);
-      } else {
-        this.grid.moveEnemyTo([x.row, x.column], destination);
-      }
-    }
-    const moveAllEnemiesOneCellToTheRight = () => {
-      let enemies = [];
-      for (let column = this.grid.canvasColumns - 1; column >= 0; column--) {
-        for (let row = 0; row < this.grid.canvasRows; row++) {
-          let enemy = this.grid.getCell(row, column);
-          if (enemy)
-            enemies.push(enemy);
-        }
-      }
-      enemies.forEach(moveAllInArray);
-    };
-    const moveAllEnemiesOneCellToTheLeft = () => {
-      let enemies = [];
-      for (let column = 0; column < this.grid.canvasColumns; column++) {
-        for (let row = 0; row < this.grid.canvasRows; row++) {
-          let enemy = this.grid.getCell(row, column);
-          if (enemy)
-            enemies.push(enemy);
-        }
-      }
-      enemies.forEach(moveAllInArray);
-    };
-    const moveAllEnemiesOneCellDown = () => {
-      let enemies = [];
-      for (let row = this.grid.canvasRows - 1; row >= 0; row--) {
-        for (let column = this.grid.canvasColumns - 1; column >= 0; column--) {
-          let enemy = this.grid.getCell(row, column);
-          if (enemy)
-            enemies.push(enemy);
-        }
-      }
-      enemies.forEach(moveAllInArray);
-    };
-
-    if (this.siEnemiesMovementDown) {
-      moveAllEnemiesOneCellDown();
-    } else if (this.siEnemiesMovementDirection) {
-      moveAllEnemiesOneCellToTheRight();
+    if (this._spaceInvadersMovementController.siEnemiesMovementDown) {
+      this._spaceInvadersMovementController.moveAllEnemiesOneCellDown();
+    } else if (this._spaceInvadersMovementController.siEnemiesMovementDirection) {
+      this._spaceInvadersMovementController.moveAllEnemiesOneCellToTheRight();
     } else {
-      moveAllEnemiesOneCellToTheLeft();
+      this._spaceInvadersMovementController.moveAllEnemiesOneCellToTheLeft();
     }
   }
   /**

@@ -269,7 +269,7 @@ export class Game {
 
     if (!this.model.siEnemies || this.model.siEnemies.length === 0)
       this.model.grid.initSIEnemiesLocations();
-      //this.model.createEnemies();
+
     this.enemiesMovementController.moveSpaceInvadersEnemies();
     this.model.createBonusEnemy();
   }

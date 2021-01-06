@@ -23,12 +23,13 @@ export class ObjectPool {
    * @param {any} properties Properties to be injected into new object
    */
   getNewObject(properties) {
-    console.warn(this.hiddenObjects)
+    //console.warn(this.hiddenObjects)
     if (this.hiddenObjects.length > 0) {
       let obj = this.hiddenObjects.pop();
       this.showingObjects.push(obj);
       obj.elem.style.display = "inline";
       this._setObjProperties(obj, properties);
+      console.warn('Get new object from store: ', obj)
       return obj;
     } else {
       let obj = this.objCreationCallback();
@@ -45,7 +46,7 @@ export class ObjectPool {
     let index = this.showingObjects.findIndex(x => x.id === obj.id);
     if(index === -1)
       return;
-    console.error(`STORE: objId ${obj.id} ; showingId ${this.showingObjects[index].id}`)
+    console.log(`STORE: objId ${obj.id} ; showingId ${this.showingObjects[index].id}`)
     this.showingObjects.splice(index, 1);
     this._hideObject(obj);
   }

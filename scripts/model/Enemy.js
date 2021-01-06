@@ -123,11 +123,15 @@ export class Enemy extends CollisionableObject {
    * Shoot one bullet. It shoots the correct bullet wither if the game is on "space invaders" or "scroll vertical" state.
    */
   shoot() {
+    console.log('SHOOT')
     this.audio = game.audio.playAudio("assets/music/sounds/enemyLaser.mp3");
     let bullet, bulletInitialCoords = [this.centerX, this.centerY];
     if (game.gameState === "spaceInvaders") {
-      bullet = game.model.enemiesBulletsPool.getNewObject(() => new EnemyBullet(
-        this.x, this.y + this.height - game.bulletSize[1]), this.x, this.y + this.height - game.bulletSize[1]);
+      console.log('SHOOT SI')
+      bullet = game.model.enemiesBulletsPool.getNewObject({
+        x: bulletInitialCoords[0],
+        y: bulletInitialCoords[1]
+      })
       bullet.move([0, 1]);
     } else {
       let direction;
