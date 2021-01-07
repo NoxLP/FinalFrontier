@@ -179,6 +179,7 @@ export class Game {
   //#endregion
   /************************************************************************************************************/
   /*********************************************** GAME STATE *************************************************/
+  //#region
   /**
    * Game over. You know, message, reset all, go back to the menu, etc.
    */
@@ -204,13 +205,6 @@ export class Game {
    */
   siReset() {
     player.teleportToInitialPosition();
-
-    //All enemies to initial position
-    /*for (let i = 0; i < this.model.siEnemies.length; i++) {
-      for (let j = 0; j < this.model.siEnemies[i].length; j++) {
-        this.model.siEnemies[i][j].teleportToInitialPosition();
-      }
-    }*/
 
     if (this.model.bonus) {
       this.model.bonus.cancelAnimation();
@@ -247,7 +241,7 @@ export class Game {
     this.playerInputController.responsive = false;
 
     setTimeout(() => {
-      this.showMessage(`You Won Crack. Your points are: ${this.pointsCounter.showedPoints}`);
+      this.showMessage(`You Won. Your points are: ${this.pointsCounter.showedPoints}`);
       player.resetLives();
       this.pointsCounter.reset();
       setTimeout(() => {
@@ -273,6 +267,7 @@ export class Game {
     this.enemiesMovementController.moveSpaceInvadersEnemies();
     this.model.createBonusEnemy();
   }
+  //#endregion
   /************************************************************************************************************/
   /************************************************* CHEATS ***************************************************/
   /**
@@ -280,9 +275,25 @@ export class Game {
    */
   cheatToFinal() {
     this.enemiesMovementController.cancelAllEnemiesMovement();
+    this.model.enemiesPool.storeAllObjects()
     this.backgroundController.stopBackground();
     this.backgroundController.backgroundBottom = -18625;
     this.model.finalBoss = new Boss();
     this.model.finalBoss.enterGame();
+  }
+  /**
+   * Cheat to go instantly to scroll vertical.
+   */
+  cheatToScrollVertical() {
+    this.enemiesMovementController.cancelAllEnemiesMovement();
+    this.model.enemiesPool.storeAllObjects()
+    this.model.grid.doToEveryEnemies(enemy => {
+      cancelAnimationFrame(enemy.moveAnimationId);
+      clearTimeout(enemy.moveAnimationId);
+      if(enemy.myMovementTween)
+        enemy.automaticCancelMovement()
+      this.model.grid.removeEnemy(enemy)
+    })
+    this.startScrollVertical()
   }
 }

@@ -7,7 +7,7 @@ import { Player } from "./model/Player.js";
  */
 export const game = new Game(8);
 /**
- * Object to handle and interact tieh game's menu
+ * Object to handle and interact with game's menu
  */
 export const menu = new Menu();
 /**
@@ -21,7 +21,7 @@ document.addEventListener("keydown", function (e) {
     return;
   
   lastPressedKey = e.key;
-  game.playerInputController.keyDown(e.key);
+  game.playerInputController.keyDown(e);
 });
 
 document.addEventListener("keyup", e => {

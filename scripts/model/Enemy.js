@@ -80,12 +80,14 @@ export class Enemy extends CollisionableObject {
     if (this.myMovementTween) {
       //if enemy is already in the middle of a movement tween, better to return false. If want to cancel the current tween, one can always pause or stop it before beginning a new movement
       if (this.myMovementTween.running)
-        return false;
+      return false;
+      console.log('move to point ', this)
 
       //if enemy was in a tween AND the tween was paused, stopped, or finished, then just check if it was only paused and stop it without calling the final callback
       if (this.myMovementTween.paused) {
         this.myMovementTween.stopWithoutCallback = true;
         this.myMovementTween.stop();
+        console.log('return')
         return false;
       } else {
         this.myMovementTween.stopWithoutCallback = false;
@@ -191,5 +193,10 @@ export class Enemy extends CollisionableObject {
           break;
       }
     }
+  }
+  automaticCancelMovement() {
+    this.myMovementTween._tweenPaused = false
+    this.myMovementTween.stopWithoutCallback = true;
+    this.myMovementTween.stop();
   }
 }

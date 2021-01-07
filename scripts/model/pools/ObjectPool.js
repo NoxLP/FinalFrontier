@@ -11,13 +11,6 @@ export class ObjectPool {
 
     this.objCreationCallback = objCreationCallback;
   }
-  _setObjProperties(obj, properties) {
-    if(properties) {
-      for(let prop in properties) {
-        obj[prop] = properties[prop];
-      }
-    }
-  }
   /**
    * Function used to retrieve an object from the pool. If there are objects stored at the pool, it retrieves the object from the pool and return it, in other case the creation callback function is used to create a new object, add it as a 'showing in screen' object and return it.
    * @param {any} properties Properties to be injected into new object
@@ -36,6 +29,13 @@ export class ObjectPool {
       this._setObjProperties(obj, properties);
       this.showingObjects.push(obj);
       return obj;
+    }
+  }
+  _setObjProperties(obj, properties) {
+    if(properties) {
+      for(let prop in properties) {
+        obj[prop] = properties[prop];
+      }
     }
   }
   /**
