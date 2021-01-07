@@ -69,7 +69,7 @@ export class ControllerEnemiesMovement {
     this._spaceInvadersMovementController = new ControllerEnemMoveSpaceInvaders(this)
   }
   /**
-   * Move all enemies in the "space invaders" pattern
+   * Move all enemies in the "space invaders" part
    */
   moveSpaceInvadersEnemies() {
     console.log('moveSpaceInvadersEnemies')

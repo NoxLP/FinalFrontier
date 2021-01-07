@@ -1,3 +1,6 @@
+/**
+ * Object to handle space invaders enemies movement
+ */
 export class ControllerEnemMoveSpaceInvaders {
   constructor(movementController) {
     this._movementController = movementController;
@@ -8,6 +11,9 @@ export class ControllerEnemMoveSpaceInvaders {
     this.siEnemiesShootsPerMove = 2
     this.firstTime = true
   }
+  /**
+   * Move enemies from left to right
+   */
   moveAllEnemiesOneCellToTheRight() {
     let enemies = this.selectEnemiesInOrder('right')
     if(!this.firstTime) {
@@ -15,8 +21,11 @@ export class ControllerEnemMoveSpaceInvaders {
     } else {
       this.firstTime = false
     }
-    enemies.forEach((x, idx, arr) => this.moveAllInArray(x, idx, arr));
+    enemies.forEach((enemy, idx, arr) => this.moveEnemyInArray(enemy, idx, arr));
   }
+  /**
+   * Move enemies from right to left
+   */
   moveAllEnemiesOneCellToTheLeft() {
     let enemies = this.selectEnemiesInOrder('left')
     if(!this.firstTime) {
@@ -24,11 +33,18 @@ export class ControllerEnemMoveSpaceInvaders {
     } else {
       this.firstTime = false
     }
-    enemies.forEach((x, idx, arr) => this.moveAllInArray(x, idx, arr));
+    enemies.forEach((enemy, idx, arr) => this.moveEnemyInArray(enemy, idx, arr));
   }
+  /**
+   * Move enemies down
+   */
   moveAllEnemiesOneCellDown() {
-    this.selectEnemiesInOrder('down').forEach((x, idx, arr) => this.moveAllInArray(x, idx, arr));
+    this.selectEnemiesInOrder('down').forEach((enemy, idx, arr) => this.moveEnemyInArray(enemy, idx, arr));
   }
+  /**
+   * Get 1 dimension array with surviving enemies in the correct order for the corresponding movement specified in order parameter
+   * @param {string} order 'right'|'left'|'down'
+   */
   selectEnemiesInOrder(order) {
     let enemies = []
     switch(order) {
@@ -62,6 +78,10 @@ export class ControllerEnemMoveSpaceInvaders {
     }
     return enemies
   }
+  /**
+   * Change direction of enemies if needed: if enemies goes from left to right and reach the screen's right limit, changes direction to down, after that
+   * it will change direction to left
+   */
   updateDirectionIfNeeded() {
     if (this.siEnemiesMovementDown) {
       this.siEnemiesMovementDown = false;
@@ -72,19 +92,30 @@ export class ControllerEnemMoveSpaceInvaders {
         this.siEnemiesMovementDown = true;
       }
     }
-  };
-  moveAllInArray(x, idx, arr) {
-    let destination = this.siEnemiesMovementDown ? [x.row + 1, x.column] :
-      this.siEnemiesMovementDirection ? [x.row, x.column + 1] : [x.row, x.column - 1];
+  }
+  /**
+   * Callback for forEach statement of an array usually returned from selectEnemiesInOrder function, that contains all enemies to be moved. Handles the final move the 
+   * enemy must perform.
+   * @param {Enemy} enemy Corresponding enemy in forEach loop
+   * @param {int} idx Index of enemy
+   * @param {array} arr forEach loop array
+   */
+  moveEnemyInArray(enemy, idx, arr) {
+    let destination = this.siEnemiesMovementDown ? [enemy.row + 1, enemy.column] :
+      this.siEnemiesMovementDirection ? [enemy.row, enemy.column + 1] : [enemy.row, enemy.column - 1];
     if (idx === arr.length - 1) {
-      this._movementController.grid.moveEnemyTo([x.row, x.column], destination, () => {
+      this._movementController.grid.moveEnemyTo([enemy.row, enemy.column], destination, () => {
         this._movementController.siEnemiesMovementTimerId = setTimeout(() => { this._movementController.moveSpaceInvadersEnemies(); }, 500);
       });
-      this.updateDirectionIfNeeded(x);
+      this.updateDirectionIfNeeded();
     } else {
-      this._movementController.grid.moveEnemyTo([x.row, x.column], destination);
+      this._movementController.grid.moveEnemyTo([enemy.row, enemy.column], destination);
     }
   }
+  /**
+   * Choose randomly a number of enemies (this.siEnemiesShootsPerMove) from an array of enemies usually returned from selectEnemiesInOrder function, and shoot with that enemies.
+   * @param {array} enemies Array of enemies
+   */
   chooseOneEnemyAndShoot(enemies) {
     //this.siEnemiesShootsTimerId = setInterval(() => {
     /*
